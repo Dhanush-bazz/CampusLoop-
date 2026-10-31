@@ -36,7 +36,7 @@ export default function EventCard({ event }: EventCardProps) {
         {/* Action Link styled as primary small button */}
         <div className="mt-4 pt-1">
           <Link
-            href={`#event-${event.id}`}
+            href={`/events/${event.id}`}
             className="inline-flex min-h-9 items-center justify-center rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover active:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
           >
             View Details

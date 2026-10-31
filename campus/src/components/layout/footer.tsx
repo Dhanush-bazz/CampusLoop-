@@ -15,7 +15,7 @@ export default function Footer() {
           aria-label="Footer Navigation"
         >
           <Link
-            href="#about"
+            href="/#about"
             className="transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded px-1"
           >
             About
@@ -23,33 +23,23 @@ export default function Footer() {
           <span aria-hidden="true" className="text-border">
             |
           </span>
-          <Link
-            href="#contact"
-            className="transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded px-1"
-          >
+          <span className="px-1" aria-disabled="true">
             Contact
-          </Link>
+          </span>
           <span aria-hidden="true" className="text-border">
             |
           </span>
-          <Link
-            href="#privacy"
-            className="transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded px-1"
-          >
+          <span className="px-1" aria-disabled="true">
             Privacy Policy
-          </Link>
+          </span>
           <span aria-hidden="true" className="text-border">
             |
           </span>
-          <Link
-            href="#terms"
-            className="transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded px-1"
-          >
+          <span className="px-1" aria-disabled="true">
             Terms and Conditions
-          </Link>
+          </span>
         </nav>
       </div>
     </footer>
   );
 }
-

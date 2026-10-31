@@ -6,10 +6,12 @@ CampusLoop helps students discover, save, and keep track of campus events, while
 giving organisers a place to publish and manage them. The system should make
 event details easy to scan and the next useful action easy to find.
 
-This document defines the initial UI direction for the MVP. No wireframes are
-present in the project yet, so the palette and component guidance below are
-provisional and should be checked against approved wireframes before being
-treated as final brand decisions.
+The approved screen layouts are documented in
+[`docs/wireframes/campusloop-wireframe.svg`](./docs/wireframes/campusloop-wireframe.svg)
+and are the source of truth for page structure and user flows. The palette and
+component guidance below remain provisional where the wireframes do not define
+them; do not change a wireframe-driven layout to accommodate an implementation
+mistake.
 
 ## 2. Design Principles
 
@@ -36,8 +38,10 @@ proposals, not extracted from wireframes.
 | `canvas` | `#F8FAFC` | Application page background |
 | `surface` | `#FFFFFF` | Cards, menus, dialogs, and input backgrounds |
 | `surface-muted` | `#F1F5F9` | Subtle grouped areas and inactive controls |
+| `surface-hover` | `#E2E8F0` | Hovered surface controls |
 | `text-primary` | `#0F172A` | Headings and primary body text |
 | `text-secondary` | `#475569` | Supporting text and metadata |
+| `text-tertiary` | `#64748B` | Compact metadata and icon labels |
 | `text-disabled` | `#64748B` | Disabled labels; pair with a visibly disabled control |
 | `border` | `#CBD5E1` | Dividers, input outlines, and card borders |
 | `primary` | `#1D4ED8` | Primary actions, links, and selected navigation |

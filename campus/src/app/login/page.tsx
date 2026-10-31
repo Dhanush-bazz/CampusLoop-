@@ -16,20 +16,20 @@ export default function LoginPage() {
     password?: string;
   }>({});
 
-  const [authError, setAuthError] = useState("");
+  const [authNotice, setAuthNotice] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear field-level error as user edits
-    if (fieldErrors[name as keyof typeof fieldErrors]) {
+    if ((name === "email" || name === "password") && fieldErrors[name]) {
       setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
     }
 
     // Clear top error banner when user edits any field
-    if (authError) {
-      setAuthError("");
+    if (authNotice) {
+      setAuthNotice("");
     }
   };
 
@@ -54,13 +54,13 @@ export default function LoginPage() {
 
     // If there are validation errors, clear the top banner
     if (Object.keys(errors).length > 0) {
-      setAuthError("");
+      setAuthNotice("");
       return;
     }
 
-    // Prototype behavior: Since there is no backend authentication yet,
-    // valid format inputs simulate the wireframe error banner.
-    setAuthError("Invalid email or password.");
+    setAuthNotice(
+      "Authentication is not connected in this development preview. Use Demo Portals to explore the student interface.",
+    );
   };
 
   return (
@@ -73,13 +73,10 @@ export default function LoginPage() {
         </h1>
 
         {/* Error Banner matching Frame 03 */}
-        {authError && (
-          <div
-            role="alert"
-            className="mt-6 flex items-center justify-center rounded-lg border border-danger/30 bg-rose-50 px-4 py-3 text-center text-sm font-medium text-danger"
-          >
-            {authError}
-          </div>
+        {authNotice && (
+          <output className="mt-6 flex items-center justify-center rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-center text-sm font-medium text-amber-900">
+            {authNotice}
+          </output>
         )}
 
         {/* Form Fields */}
@@ -132,10 +129,11 @@ export default function LoginPage() {
             </Button>
 
             {/* Secondary Action: Create an Account */}
-            <Link href="/signup" className="w-full">
-              <Button variant="outline" size="lg" className="w-full">
-                Create an Account
-              </Button>
+            <Link
+              href="/signup"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-lg border border-border bg-surface px-6 py-3 text-base font-medium text-text-primary transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+            >
+              Create an Account
             </Link>
           </div>
         </form>

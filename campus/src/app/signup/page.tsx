@@ -20,6 +20,7 @@ export default function SignUpPage() {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setIsSubmitted(false);
 
     // Clear field-specific error as user types
     if (errors[name]) {
@@ -90,9 +91,10 @@ export default function SignUpPage() {
 
         {/* Success Message Banner */}
         {isSubmitted && (
-          <div className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-success">
-            Registration successful! Please check your email to continue.
-          </div>
+          <output className="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-900">
+            Your details passed local validation. This preview does not create
+            accounts or send email.
+          </output>
         )}
 
         {/* Form Fields */}

@@ -20,14 +20,14 @@ export default function HeroSection() {
           {/* Action Buttons */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link
-              href="#explore"
+              href="/explore"
               className="inline-flex min-h-12 items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-medium text-white transition-colors hover:bg-primary-hover active:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
             >
               Explore Events
             </Link>
 
             <Link
-              href="#signup"
+              href="/signup"
               className="inline-flex min-h-12 items-center justify-center rounded-lg border border-border bg-surface px-6 py-3 text-base font-medium text-text-primary transition-colors hover:bg-surface-muted active:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
             >
               Get Started
