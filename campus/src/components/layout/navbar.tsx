@@ -58,12 +58,12 @@ export default function Navbar() {
         {/* Right Side: Desktop Action Buttons */}
         <div className="hidden items-center gap-3 md:flex">
           <Link
-            href="#login"
+            href="/login"
             className="rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             Login
           </Link>
-          <Link href="#signup" tabIndex={-1}>
+          <Link href="/signup" tabIndex={-1}>
             <Button size="sm">Sign Up</Button>
           </Link>
         </div>
@@ -120,13 +120,13 @@ export default function Navbar() {
             </Link>
             <div className="mt-4 flex flex-col gap-2.5 border-t border-border pt-4">
               <Link
-                href="#login"
+                href="/login"
                 onClick={closeMenu}
                 className="flex items-center justify-center rounded-lg border border-border bg-surface py-2.5 text-center text-sm font-medium text-text-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
                 Login
               </Link>
-              <Link href="#signup" onClick={closeMenu} tabIndex={-1}>
+              <Link href="/signup" onClick={closeMenu} tabIndex={-1}>
                 <Button size="md" className="w-full">
                   Sign Up
                 </Button>
