@@ -63,8 +63,8 @@ export default function Navbar() {
           >
             Login
           </Link>
-          <Link href="#get-started" tabIndex={-1}>
-            <Button size="sm">Get Started</Button>
+          <Link href="#signup" tabIndex={-1}>
+            <Button size="sm">Sign Up</Button>
           </Link>
         </div>
 
@@ -126,9 +126,9 @@ export default function Navbar() {
               >
                 Login
               </Link>
-              <Link href="#get-started" onClick={closeMenu} tabIndex={-1}>
+              <Link href="#signup" onClick={closeMenu} tabIndex={-1}>
                 <Button size="md" className="w-full">
-                  Get Started
+                  Sign Up
                 </Button>
               </Link>
             </div>
