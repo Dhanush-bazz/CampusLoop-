@@ -147,7 +147,7 @@ export default function StudentDashboardPage() {
           aria-label="Filter events"
         >
           {/* Category Dropdown */}
-          <div className="relative min-w-[160px] flex-1 sm:flex-initial">
+          <div className="relative w-full sm:w-auto min-w-0 sm:min-w-[160px] flex-1 sm:flex-initial">
             <label htmlFor="dashboard-category" className="sr-only">
               Category
             </label>
@@ -174,7 +174,7 @@ export default function StudentDashboardPage() {
           </div>
 
           {/* Date Dropdown */}
-          <div className="relative min-w-[140px] flex-1 sm:flex-initial">
+          <div className="relative w-full sm:w-auto min-w-0 sm:min-w-[140px] flex-1 sm:flex-initial">
             <label htmlFor="dashboard-date" className="sr-only">
               Date
             </label>
@@ -197,7 +197,7 @@ export default function StudentDashboardPage() {
           </div>
 
           {/* Sort Dropdown */}
-          <div className="relative min-w-[200px] flex-1 sm:flex-initial">
+          <div className="relative w-full sm:w-auto min-w-0 sm:min-w-[200px] flex-1 sm:flex-initial">
             <label htmlFor="dashboard-sort" className="sr-only">
               Sort
             </label>
@@ -294,11 +294,11 @@ export default function StudentDashboardPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-row items-center gap-3 md:flex-col md:items-end">
+                <div className="flex flex-col sm:flex-row md:flex-col items-stretch sm:items-center md:items-end gap-2.5 sm:gap-3 w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={() => toggleBookmark(currentFeatured.id)}
-                    className={`inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${
+                    className={`inline-flex items-center justify-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus w-full sm:w-auto ${
                       isCurrentFeaturedSaved
                         ? "border-primary bg-primary text-white hover:bg-primary-hover"
                         : "border-border bg-surface text-text-primary hover:bg-surface-muted"
@@ -318,7 +318,7 @@ export default function StudentDashboardPage() {
 
                   <Link
                     href={`/events/${currentFeatured.id}`}
-                    className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus w-full sm:w-auto text-center"
                   >
                     View Details
                   </Link>

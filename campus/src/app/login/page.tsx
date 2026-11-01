@@ -128,7 +128,7 @@ function LoginFormInner() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] w-full items-center justify-center bg-canvas p-4 sm:p-6 lg:p-8">
-      <div className="w-full max-w-[520px] rounded-2xl border border-border bg-surface p-6 sm:p-10 shadow-sm">
+      <div className="w-full max-w-[520px] rounded-2xl border border-border bg-surface p-5 sm:p-8 md:p-10 shadow-sm">
         {/* Brand Header */}
         <div className="text-center">
           <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white shadow-xs mb-3">

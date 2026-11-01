@@ -34,4 +34,3 @@ export function getRoleDashboardPath(role: UserRole): string {
       return "/admin/dashboard";
   }
 }
-

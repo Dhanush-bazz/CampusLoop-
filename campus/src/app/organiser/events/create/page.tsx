@@ -157,14 +157,12 @@ export default function CreateEventPage() {
               <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-sm">
-                  {isDraftSaving
-                    ? "Draft saved"
-                    : "Submission saved in preview"}
+                  {isDraftSaving ? "Draft saved" : "Event proposal submitted"}
                 </p>
                 <p className="text-xs mt-0.5">
                   {isDraftSaving
-                    ? "Your draft has been saved in this browser preview."
-                    : "Your event is saved locally and marked pending. Admin review is not implemented."}
+                    ? "Your draft has been saved in this browser."
+                    : "Your event has been submitted and is awaiting administrative review."}
                 </p>
                 <p className="text-xs font-semibold mt-1">
                   Status: {isDraftSaving ? "Draft" : "Pending Approval"}
@@ -472,12 +470,12 @@ export default function CreateEventPage() {
           </div>
 
           {/* Form Action Buttons (matching Frame 14 SVG) */}
-          <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 border-t border-border">
             {/* Submit for Approval (#313131 in SVG) */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-lg bg-[#313131] px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-50"
+              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-[#313131] px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-50 text-center"
             >
               {isSubmitting ? "Submitting..." : "Submit for Approval"}
             </button>
@@ -486,7 +484,7 @@ export default function CreateEventPage() {
             <button
               type="button"
               onClick={(e) => handleSubmit(e, true)}
-              className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-5 py-3 text-sm font-semibold text-text-primary shadow-xs hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg border border-border bg-surface px-5 py-3 text-sm font-semibold text-text-primary shadow-xs hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus text-center"
             >
               Save as Draft
             </button>
@@ -494,7 +492,7 @@ export default function CreateEventPage() {
             {/* Cancel (#ffffff in SVG) */}
             <Link
               href="/organiser/dashboard"
-              className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg border border-border bg-surface px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus text-center"
             >
               Cancel
             </Link>

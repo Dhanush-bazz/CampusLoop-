@@ -75,7 +75,7 @@ export default function MyRegistrationsPage() {
                     <p className="text-xs text-text-secondary sm:text-sm">
                       {event.date} <span className="text-border">|</span>{" "}
                       {event.venue} <span className="text-border">|</span>{" "}
-                      <span className="inline-flex items-center gap-1 text-primary">
+                      <span className="inline-flex items-center gap-1 text-primary break-all">
                         <span>
                           Registration link:{" "}
                           {event.registrationLink.replace("https://", "")}
@@ -85,10 +85,10 @@ export default function MyRegistrationsPage() {
                   </div>
 
                   {/* Right Actions matching Frame 09: [ View Event Details ] */}
-                  <div className="flex shrink-0 items-center gap-2.5">
+                  <div className="flex shrink-0 items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
                     <Link
                       href={`/events/${event.id}`}
-                      className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm"
+                      className="inline-flex h-10 flex-1 sm:flex-initial items-center justify-center rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm text-center"
                     >
                       View Event Details
                     </Link>
@@ -96,7 +96,7 @@ export default function MyRegistrationsPage() {
                     <button
                       type="button"
                       onClick={() => removeRegistration(event.id)}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-text-secondary hover:bg-surface-muted hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-text-secondary hover:bg-surface-muted hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                       aria-label={`Remove ${event.title} from registrations`}
                       title="Remove from my registrations"
                     >

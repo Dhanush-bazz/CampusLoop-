@@ -253,14 +253,14 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
             </div>
 
             {/* Frame 20 Action Buttons: Approve Event (w=200, fill=#eaf9ef) & Reject Event (w=200, fill=#fff0f0) */}
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full">
               <button
                 type="button"
                 onClick={() => {
                   setShowApproveDialog(true);
                   setShowRejectDialog(false);
                 }}
-                className="flex-1 min-w-[180px] inline-flex items-center justify-center gap-2 rounded-xl border border-[#067429]/40 bg-[#eaf9ef] py-3.5 text-sm font-bold text-[#067429] shadow-xs hover:bg-[#d8f4e2] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className="flex-1 w-full sm:w-auto min-w-0 sm:min-w-[180px] inline-flex items-center justify-center gap-2 rounded-xl border border-[#067429]/40 bg-[#eaf9ef] py-3.5 text-sm font-bold text-[#067429] shadow-xs hover:bg-[#d8f4e2] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Approve Event</span>
@@ -272,7 +272,7 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
                   setShowRejectDialog(true);
                   setShowApproveDialog(false);
                 }}
-                className="flex-1 min-w-[180px] inline-flex items-center justify-center gap-2 rounded-xl border border-[#bd0a0a]/40 bg-[#fff0f0] py-3.5 text-sm font-bold text-[#bd0a0a] shadow-xs hover:bg-[#fedede] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className="flex-1 w-full sm:w-auto min-w-0 sm:min-w-[180px] inline-flex items-center justify-center gap-2 rounded-xl border border-[#bd0a0a]/40 bg-[#fff0f0] py-3.5 text-sm font-bold text-[#bd0a0a] shadow-xs hover:bg-[#fedede] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
                 <XCircle className="h-4 w-4" />
                 <span>Reject Event</span>

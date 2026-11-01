@@ -291,7 +291,7 @@ function EventDetailInner({ params }: EventDetailPageProps) {
             aria-modal="true"
             aria-labelledby="reminder-modal-title"
           >
-            <div className="relative w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl space-y-5">
+            <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-2xl space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <h3
                   id="reminder-modal-title"

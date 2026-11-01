@@ -123,12 +123,12 @@ export default function PendingEventsPage() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
             {/* Category dropdown */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <label
                 htmlFor="pending-cat-filter"
-                className="text-xs font-semibold text-text-secondary"
+                className="text-xs font-semibold text-text-secondary shrink-0"
               >
                 Category:
               </label>
@@ -136,7 +136,7 @@ export default function PendingEventsPage() {
                 id="pending-cat-filter"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
+                className="w-full sm:w-auto rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
@@ -147,10 +147,10 @@ export default function PendingEventsPage() {
             </div>
 
             {/* Submission date sort */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <label
                 htmlFor="pending-date-sort"
-                className="text-xs font-semibold text-text-secondary"
+                className="text-xs font-semibold text-text-secondary shrink-0"
               >
                 Submission date:
               </label>
@@ -160,7 +160,7 @@ export default function PendingEventsPage() {
                 onChange={(e) =>
                   setDateSort(e.target.value as "newest" | "oldest")
                 }
-                className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
+                className="w-full sm:w-auto rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
               >
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
@@ -185,7 +185,7 @@ export default function PendingEventsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-sm min-w-[640px]">
                 <thead className="border-b border-border bg-surface-muted/60 text-xs font-semibold uppercase text-text-secondary">
                   <tr>
                     <th scope="col" className="px-6 py-3.5">
@@ -279,7 +279,7 @@ export default function PendingEventsPage() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
             <h3 className="text-base font-bold text-text-primary">
               Approve Dialog
             </h3>
@@ -314,7 +314,7 @@ export default function PendingEventsPage() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
             <h3 className="text-base font-bold text-text-primary">
               Reject Dialog
             </h3>

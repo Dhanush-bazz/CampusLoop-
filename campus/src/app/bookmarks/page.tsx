@@ -39,8 +39,8 @@ export default function BookmarkedEventsPage() {
                 className="flex flex-col justify-between gap-4 rounded-xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:p-5 shadow-xs transition-shadow hover:shadow-md"
               >
                 {/* Left: Thumbnail and Info */}
-                <div className="flex items-start gap-4">
-                  <div className="flex h-20 w-24 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-xs font-medium text-text-disabled">
+                <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                  <div className="flex h-20 w-full sm:w-24 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-xs font-medium text-text-disabled">
                     Image
                   </div>
 
@@ -63,10 +63,10 @@ export default function BookmarkedEventsPage() {
                 </div>
 
                 {/* Right: Actions matching Frame 08: [ View Details ] [ Remove Bookmark ] */}
-                <div className="flex shrink-0 items-center gap-2.5 sm:self-center">
+                <div className="flex flex-col sm:flex-row shrink-0 items-stretch sm:items-center gap-2.5 sm:self-center w-full sm:w-auto">
                   <Link
                     href={`/events/${event.id}`}
-                    className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm"
+                    className="inline-flex h-10 w-full sm:w-auto items-center justify-center rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm text-center"
                   >
                     View Details
                   </Link>
@@ -74,7 +74,7 @@ export default function BookmarkedEventsPage() {
                   <button
                     type="button"
                     onClick={() => removeBookmark(event.id)}
-                    className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface px-3.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm"
+                    className="inline-flex h-10 w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg border border-border bg-surface px-3.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm"
                     aria-label={`Remove ${event.title} from bookmarks`}
                   >
                     <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />

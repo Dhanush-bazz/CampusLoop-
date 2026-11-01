@@ -67,10 +67,10 @@ export default function ApprovedEventsPage() {
           </div>
 
           {/* Category dropdown */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <label
               htmlFor="approved-cat-filter"
-              className="text-xs font-semibold text-text-secondary"
+              className="text-xs font-semibold text-text-secondary shrink-0"
             >
               Category:
             </label>
@@ -78,7 +78,7 @@ export default function ApprovedEventsPage() {
               id="approved-cat-filter"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
+              className="w-full sm:w-auto rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
@@ -105,7 +105,7 @@ export default function ApprovedEventsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-sm min-w-[640px]">
                 <thead className="border-b border-border bg-surface-muted/60 text-xs font-semibold uppercase text-text-secondary">
                   <tr>
                     <th scope="col" className="px-6 py-3.5">

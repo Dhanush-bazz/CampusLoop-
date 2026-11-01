@@ -116,11 +116,11 @@ export default function OrganiserMyEventsPage() {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-text-secondary">
+          <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-1 sm:pb-0 scrollbar-none">
+            <span className="text-xs font-semibold text-text-secondary shrink-0">
               Status:
             </span>
-            <div className="flex items-center gap-1 rounded-lg bg-surface-muted p-1 text-xs font-semibold">
+            <div className="flex items-center gap-1 rounded-lg bg-surface-muted p-1 text-xs font-semibold shrink-0">
               {(
                 ["All", "Approved", "Pending", "Rejected", "Draft"] as const
               ).map((status) => (
@@ -128,7 +128,7 @@ export default function OrganiserMyEventsPage() {
                   key={status}
                   type="button"
                   onClick={() => setSelectedStatus(status)}
-                  className={`rounded-md px-3 py-1 transition-colors ${
+                  className={`rounded-md px-3 py-1 transition-colors shrink-0 ${
                     selectedStatus === status
                       ? "bg-surface text-text-primary shadow-xs"
                       : "text-text-secondary hover:text-text-primary"
@@ -155,7 +155,7 @@ export default function OrganiserMyEventsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-sm min-w-[640px]">
                 <thead className="border-b border-border bg-surface-muted/60 text-xs font-semibold uppercase text-text-secondary">
                   <tr>
                     <th scope="col" className="px-6 py-3.5">
@@ -256,7 +256,7 @@ export default function OrganiserMyEventsPage() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
             <h3 className="text-base font-bold text-text-primary">
               Delete Event
             </h3>

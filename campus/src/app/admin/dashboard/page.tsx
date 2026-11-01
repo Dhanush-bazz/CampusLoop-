@@ -234,14 +234,14 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Quick status tabs */}
-            <div className="flex items-center gap-1.5 rounded-lg bg-surface-muted p-1 text-xs font-semibold">
+            <div className="flex items-center gap-1.5 rounded-lg bg-surface-muted p-1 text-xs font-semibold overflow-x-auto max-w-full pb-1 sm:pb-0 scrollbar-none">
               {(["All", "Pending", "Approved", "Rejected"] as const).map(
                 (status) => (
                   <button
                     key={status}
                     type="button"
                     onClick={() => setActiveFilter(status)}
-                    className={`rounded-md px-3 py-1 transition-colors ${
+                    className={`rounded-md px-3 py-1 transition-colors shrink-0 ${
                       activeFilter === status
                         ? "bg-surface text-text-primary shadow-xs"
                         : "text-text-secondary hover:text-text-primary"
@@ -266,7 +266,7 @@ export default function AdminDashboardPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-sm min-w-[640px]">
                 <thead className="border-b border-border bg-surface-muted/60 text-xs font-semibold uppercase text-text-secondary">
                   <tr>
                     <th scope="col" className="px-6 py-3.5">
@@ -370,7 +370,7 @@ export default function AdminDashboardPage() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
             <div className="flex items-center gap-3 text-emerald-700">
               <CheckCircle2 className="h-6 w-6" />
               <h3 className="text-base font-bold text-text-primary">
@@ -408,7 +408,7 @@ export default function AdminDashboardPage() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
             <div className="flex items-center gap-3 text-rose-600">
               <AlertCircle className="h-6 w-6" />
               <h3 className="text-base font-bold text-text-primary">

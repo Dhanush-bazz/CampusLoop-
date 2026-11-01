@@ -26,4 +26,3 @@ export interface StoredSession {
   role: UserRole;
   email: string;
 }
-

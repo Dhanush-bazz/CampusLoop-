@@ -57,4 +57,3 @@ export const MOCK_USERS: MockUser[] = [
     collegeName: "City Engineering College",
   },
 ];
-

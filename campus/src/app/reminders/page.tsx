@@ -80,10 +80,10 @@ export default function MyRemindersPage() {
                   </div>
 
                   {/* Right Actions: [ View Details ] [ Remove Reminder ] */}
-                  <div className="flex shrink-0 items-center gap-2.5 sm:self-center">
+                  <div className="flex flex-col sm:flex-row shrink-0 items-stretch sm:items-center gap-2.5 sm:self-center w-full sm:w-auto">
                     <Link
                       href={`/events/${event.id}`}
-                      className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm"
+                      className="inline-flex h-10 w-full sm:w-auto items-center justify-center rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm text-center"
                     >
                       View Details
                     </Link>
@@ -91,7 +91,7 @@ export default function MyRemindersPage() {
                     <button
                       type="button"
                       onClick={() => removeReminder(rem.id)}
-                      className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface px-3.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm"
+                      className="inline-flex h-10 w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg border border-border bg-surface px-3.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:text-sm"
                       aria-label={`Remove reminder for ${event.title}`}
                     >
                       <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />

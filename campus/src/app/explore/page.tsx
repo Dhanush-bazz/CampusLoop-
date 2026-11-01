@@ -191,7 +191,7 @@ function ExploreContent() {
 
       {/* B. Category Tabs matching Frame 06 */}
       <div
-        className="flex items-center gap-2 overflow-x-auto pb-2"
+        className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"
         role="tablist"
         aria-label="Filter events by category"
       >
@@ -218,9 +218,9 @@ function ExploreContent() {
 
       {/* C. Sub-Filters Row: Date, Sort, Clear Filters, Counter */}
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface p-4">
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           {/* Date Filter Dropdown */}
-          <div className="relative min-w-[170px]">
+          <div className="relative w-full sm:w-auto min-w-0 sm:min-w-[170px]">
             <label htmlFor="explore-date" className="sr-only">
               Filter by Date
             </label>
@@ -246,7 +246,7 @@ function ExploreContent() {
           </div>
 
           {/* Sort Dropdown */}
-          <div className="relative min-w-[180px]">
+          <div className="relative w-full sm:w-auto min-w-0 sm:min-w-[180px]">
             <label htmlFor="explore-sort" className="sr-only">
               Sort events
             </label>
@@ -275,7 +275,7 @@ function ExploreContent() {
           <button
             type="button"
             onClick={handleClearFilters}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-surface px-3.5 text-sm font-medium text-text-secondary hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            className="inline-flex h-10 w-full sm:w-auto justify-center items-center gap-1.5 rounded-lg border border-border bg-surface px-3.5 text-sm font-medium text-text-secondary hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             <FilterX className="h-4 w-4" aria-hidden="true" />
             <span>Clear Filters</span>

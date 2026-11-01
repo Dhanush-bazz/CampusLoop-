@@ -442,11 +442,11 @@ function EditEventInner({ params }: EditEventPageProps) {
           </div>
 
           {/* Action buttons (matching Frame 15 SVG: Update Event, Cancel, Delete Event) */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-border">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
               <button
                 type="submit"
-                className="rounded-lg bg-[#313131] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className="w-full sm:w-auto rounded-lg bg-[#313131] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus text-center"
               >
                 {event.approvalStatus === "Draft"
                   ? "Submit for Approval"
@@ -454,7 +454,7 @@ function EditEventInner({ params }: EditEventPageProps) {
               </button>
               <Link
                 href={`/organiser/events/${event.id}`}
-                className="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-text-secondary hover:bg-surface-muted transition-colors"
+                className="w-full sm:w-auto rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-text-secondary hover:bg-surface-muted transition-colors text-center"
               >
                 Cancel
               </Link>
@@ -463,7 +463,7 @@ function EditEventInner({ params }: EditEventPageProps) {
             <button
               type="button"
               onClick={() => setShowDeleteModal(true)}
-              className="rounded-lg border border-rose-200 bg-[#fff0f0] px-5 py-2.5 text-sm font-semibold text-[#bd0a0a] hover:bg-rose-100 transition-colors"
+              className="w-full sm:w-auto rounded-lg border border-rose-200 bg-[#fff0f0] px-5 py-2.5 text-sm font-semibold text-[#bd0a0a] hover:bg-rose-100 transition-colors text-center"
             >
               Delete Event
             </button>
@@ -477,7 +477,7 @@ function EditEventInner({ params }: EditEventPageProps) {
             role="dialog"
             aria-modal="true"
           >
-            <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+            <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
               <div className="flex items-center gap-3 text-rose-600">
                 <AlertTriangle className="h-6 w-6" />
                 <h3 className="text-base font-bold text-text-primary">

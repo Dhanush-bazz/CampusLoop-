@@ -205,12 +205,12 @@ export default function StudentProfilePage() {
               </div>
 
               {/* Action Buttons matching Frame 11: [ Edit Profile ] [ Save Changes ] [ Cancel ] */}
-              <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-3 border-t border-border">
                 {!isEditing ? (
                   <button
                     type="button"
                     onClick={handleStartEdit}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                   >
                     <Edit3 className="h-4 w-4" aria-hidden="true" />
                     <span>Edit Profile</span>
@@ -219,14 +219,14 @@ export default function StudentProfilePage() {
                   <>
                     <button
                       type="submit"
-                      className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                      className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                     >
                       Save Changes
                     </button>
                     <button
                       type="button"
                       onClick={handleCancel}
-                      className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                      className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                     >
                       Cancel
                     </button>
@@ -239,7 +239,7 @@ export default function StudentProfilePage() {
                 <button
                   type="button"
                   onClick={logout}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-danger/30 bg-[#fff0f0] px-5 text-sm font-medium text-danger transition-colors hover:bg-danger hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-danger/30 bg-[#fff0f0] px-5 text-sm font-medium text-danger transition-colors hover:bg-danger hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
                   <LogOut className="h-4 w-4" aria-hidden="true" />
                   <span>Sign Out</span>
