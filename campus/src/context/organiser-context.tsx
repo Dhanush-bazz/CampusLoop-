@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "@/context/auth-context";
 import {
   readStoredJSON,
   removeStoredValues,
@@ -250,6 +251,7 @@ function isOrganiserProfile(value: unknown): value is OrganiserProfile {
 }
 
 export function OrganiserProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [events, setEvents] = useState<OrganiserEvent[]>(
     INITIAL_ORGANISER_EVENTS,
   );
@@ -257,6 +259,17 @@ export function OrganiserProvider({ children }: { children: React.ReactNode }) {
     DEFAULT_ORGANISER_PROFILE,
   );
   const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    if (user && user.role === "organiser") {
+      setProfile((prev) => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+        department: user.department || prev.department,
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     const savedEvents = readStoredJSON(
@@ -289,7 +302,10 @@ export function OrganiserProvider({ children }: { children: React.ReactNode }) {
     isDraft = false,
   ): OrganiserEvent => {
     const today = new Date().toISOString().split("T")[0];
+    const defaultEmail =
+      user && user.role === "organiser" ? user.email : profile.email;
     const newEvent: OrganiserEvent = {
+      organiserEmail: eventData.organiserEmail || defaultEmail,
       ...eventData,
       id: `org-event-${Date.now()}`,
       submissionDate: today,

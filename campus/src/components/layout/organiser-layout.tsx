@@ -4,7 +4,6 @@ import {
   CalendarPlus,
   Compass,
   LayoutDashboard,
-  LayoutGrid,
   ListOrdered,
   LogOut,
   Menu,
@@ -14,6 +13,8 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, Suspense, useState } from "react";
+import ProtectedRoute from "@/components/auth/protected-route";
+import { useAuth } from "@/context/auth-context";
 import { useOrganiser } from "@/context/organiser-context";
 
 interface OrganiserLayoutProps {
@@ -23,6 +24,7 @@ interface OrganiserLayoutProps {
 function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
   const pathname = usePathname();
   const { profile } = useOrganiser();
+  const { logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -101,17 +103,8 @@ function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
           </Link>
         </div>
 
-        {/* Right: Demo Mode indicator & Organiser Profile */}
+        {/* Right: Organiser Profile */}
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link
-            href="/demo"
-            className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50/80 px-2.5 py-1 text-xs font-semibold text-amber-800 hover:bg-amber-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            title="Switch demo role / view all demo portals"
-          >
-            <LayoutGrid className="h-3.5 w-3.5 text-amber-600" />
-            <span className="hidden sm:inline">Demo Mode •</span> Switch Portal
-          </Link>
-
           <Link
             href="/organiser/profile"
             className="flex items-center gap-2 rounded-full p-1 hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-colors"
@@ -120,7 +113,7 @@ function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
               {initials}
             </div>
             <span className="hidden text-sm font-semibold text-text-primary md:inline">
-              Me
+              {profile.name}
             </span>
           </Link>
         </div>
@@ -156,19 +149,8 @@ function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
             })}
           </nav>
 
-          {/* Sidebar bottom links: Demo Mode & Logout */}
+          {/* Sidebar bottom links: Student View & Logout */}
           <div className="space-y-2 border-t border-border pt-4">
-            <Link
-              href="/demo"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-amber-800 hover:bg-amber-500/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            >
-              <LayoutGrid
-                className="h-4 w-4 shrink-0 text-amber-600"
-                aria-hidden="true"
-              />
-              <span>Demo Portals</span>
-            </Link>
-
             <Link
               href="/dashboard"
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-text-secondary hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
@@ -180,13 +162,14 @@ function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
               <span>Student View</span>
             </Link>
 
-            <Link
-              href="/organiser/login"
+            <button
+              type="button"
+              onClick={logout}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>Logout</span>
-            </Link>
+              <span>Sign Out</span>
+            </button>
           </div>
         </aside>
 
@@ -252,17 +235,6 @@ function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
 
               <div className="mt-auto border-t border-border pt-6 space-y-2">
                 <Link
-                  href="/demo"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-amber-800 hover:bg-amber-500/10"
-                >
-                  <LayoutGrid
-                    className="h-4 w-4 shrink-0 text-amber-600"
-                    aria-hidden="true"
-                  />
-                  <span>Demo Portals</span>
-                </Link>
-                <Link
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-text-secondary hover:bg-surface-muted"
@@ -273,14 +245,17 @@ function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
                   />
                   <span>Student View</span>
                 </Link>
-                <Link
-                  href="/organiser/login"
-                  onClick={() => setMobileMenuOpen(false)}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50"
                 >
                   <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
-                  <span>Logout</span>
-                </Link>
+                  <span>Sign Out</span>
+                </button>
               </div>
             </div>
           </div>
@@ -297,10 +272,16 @@ function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
 
 export default function OrganiserLayout({ children }: OrganiserLayoutProps) {
   return (
-    <Suspense
-      fallback={<div className="min-h-screen bg-surface p-8">Loading...</div>}
-    >
-      <OrganiserLayoutContent>{children}</OrganiserLayoutContent>
-    </Suspense>
+    <ProtectedRoute allowedRoles={["organiser", "admin"]}>
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-surface p-8">
+            Loading organiser portal...
+          </div>
+        }
+      >
+        <OrganiserLayoutContent>{children}</OrganiserLayoutContent>
+      </Suspense>
+    </ProtectedRoute>
   );
 }

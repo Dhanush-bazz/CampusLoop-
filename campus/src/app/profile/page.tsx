@@ -1,12 +1,13 @@
 "use client";
 
 import { Check, Edit3, LogOut, X } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import StudentLayout from "@/components/layout/student-layout";
+import { useAuth } from "@/context/auth-context";
 import { useStudent } from "@/context/student-context";
 
 export default function StudentProfilePage() {
+  const { logout } = useAuth();
   const { profile, updateProfile } = useStudent();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -235,13 +236,14 @@ export default function StudentProfilePage() {
 
               {/* Logout Button matching Frame 11 fill="#fff0f0" */}
               <div className="pt-4">
-                <Link
-                  href="/login"
+                <button
+                  type="button"
+                  onClick={logout}
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-danger/30 bg-[#fff0f0] px-5 text-sm font-medium text-danger transition-colors hover:bg-danger hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
                   <LogOut className="h-4 w-4" aria-hidden="true" />
-                  <span>Logout</span>
-                </Link>
+                  <span>Sign Out</span>
+                </button>
               </div>
             </form>
           </div>

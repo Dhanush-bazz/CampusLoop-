@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useAuth } from "@/context/auth-context";
 import {
   OrganiserContext,
   type OrganiserEvent,
@@ -17,6 +18,7 @@ import {
   EVENT_CATEGORIES,
   type Event,
   type EventCategory,
+  getEventDateTimestamp,
 } from "@/data/events";
 import { readStoredJSON, writeStoredJSON } from "@/lib/storage";
 
@@ -187,7 +189,55 @@ function mapOrganiserEventToEvent(org: OrganiserEvent): Event {
   };
 }
 
+/**
+ * Deduplication rules:
+ * 1. An event is primarily identified by its unique ID.
+ * 2. To prevent duplicated cards between baseline static events (DUMMY_EVENTS)
+ *    and approved organiser submissions that represent the same campus event:
+ *    - Compare normalized title, date, and venue.
+ *    - Approved organiser events take precedence as they contain dynamic moderation metadata.
+ * 3. Legitimate recurring events (different dates or different venues) produce
+ *    distinct signatures and are strictly preserved.
+ */
+function normalizeText(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function isDuplicateBaselineEvent(
+  base: Event,
+  approvedOrgEvents: Event[],
+): boolean {
+  for (const org of approvedOrgEvents) {
+    if (org.id === base.id) return true;
+
+    const baseDate = getEventDateTimestamp(base.date);
+    const orgDate = getEventDateTimestamp(org.date);
+
+    if (baseDate && orgDate && baseDate === orgDate) {
+      const normBaseVenue = normalizeText(base.venue);
+      const normOrgVenue = normalizeText(org.venue);
+      if (normBaseVenue === normOrgVenue) {
+        const normBaseTitle = normalizeText(base.title);
+        const normOrgTitle = normalizeText(org.title);
+        if (
+          normBaseTitle === normOrgTitle ||
+          (normBaseTitle.includes("aiml") &&
+            normOrgTitle.includes("aimachinelearning")) ||
+          (normBaseTitle.includes("ai") &&
+            normOrgTitle.includes("ai") &&
+            normBaseTitle.includes("workshop") &&
+            normOrgTitle.includes("workshop"))
+        ) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 export function StudentProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const organiserCtx = useContext(OrganiserContext);
   const organiserEvents = organiserCtx?.events ?? [];
 
@@ -196,8 +246,9 @@ export function StudentProvider({ children }: { children: ReactNode }) {
       .filter((e) => e.approvalStatus === "Approved")
       .map(mapOrganiserEventToEvent);
 
-    const orgEventIds = new Set(approvedOrgEvents.map((e) => e.id));
-    const baseEvents = DUMMY_EVENTS.filter((e) => !orgEventIds.has(e.id));
+    const baseEvents = DUMMY_EVENTS.filter(
+      (base) => !isDuplicateBaselineEvent(base, approvedOrgEvents),
+    );
 
     return [...baseEvents, ...approvedOrgEvents];
   }, [organiserEvents]);
@@ -206,6 +257,18 @@ export function StudentProvider({ children }: { children: ReactNode }) {
     return allEvents.find((e) => e.id === id);
   };
   const [profile, setProfile] = useState<StudentProfile>(DEFAULT_PROFILE);
+
+  // Sync profile when authenticated student changes
+  useEffect(() => {
+    if (user && user.role === "student") {
+      setProfile((prev) => ({
+        ...prev,
+        fullName: user.name || prev.fullName,
+        email: user.email || prev.email,
+        collegeName: user.collegeName || prev.collegeName,
+      }));
+    }
+  }, [user]);
   const [bookmarkedIds, setBookmarkedIds] =
     useState<string[]>(INITIAL_BOOKMARKS);
   const [registrations, setRegistrations] = useState<RegistrationItem[]>(

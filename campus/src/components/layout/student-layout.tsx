@@ -6,7 +6,6 @@ import {
   CalendarCheck,
   Compass,
   LayoutDashboard,
-  LayoutGrid,
   LogOut,
   Menu,
   Search,
@@ -16,6 +15,8 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type FormEvent, type ReactNode, Suspense, useState } from "react";
+import ProtectedRoute from "@/components/auth/protected-route";
+import { useAuth } from "@/context/auth-context";
 import { useStudent } from "@/context/student-context";
 
 interface StudentLayoutProps {
@@ -25,6 +26,7 @@ interface StudentLayoutProps {
 function StudentLayoutContent({ children }: StudentLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuth();
   const { profile, reminders } = useStudent();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState("");
@@ -120,16 +122,6 @@ function StudentLayoutContent({ children }: StudentLayoutProps) {
               Campus<span className="text-primary">Loop</span>
             </span>
           </Link>
-
-          {/* Development Demo Switcher Link */}
-          <Link
-            href="/demo"
-            className="hidden xl:inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-800 hover:bg-amber-500/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ml-2"
-            title="Return to Demo Portal Selector"
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-            <span>Demo Mode • Switch Portal</span>
-          </Link>
         </div>
 
         {/* Center: Search input [ Search events by name... ] */}
@@ -214,25 +206,19 @@ function StudentLayoutContent({ children }: StudentLayoutProps) {
             })}
           </nav>
 
-          {/* Bottom Actions: Demo Switcher & Logout */}
+          {/* Bottom Actions: Sign Out */}
           <div className="border-t border-border pt-4 space-y-1">
-            <Link
-              href="/demo"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-amber-800 hover:bg-amber-500/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            <button
+              type="button"
+              onClick={logout}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-hover hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-colors"
             >
-              <LayoutGrid
-                className="h-4 w-4 shrink-0 text-amber-600"
+              <LogOut
+                className="h-4 w-4 shrink-0 text-text-tertiary"
                 aria-hidden="true"
               />
-              <span>Demo Portals</span>
-            </Link>
-            <Link
-              href="/login"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-hover hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            >
-              <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>Logout</span>
-            </Link>
+              <span>Sign Out</span>
+            </button>
           </div>
         </aside>
 
@@ -306,25 +292,17 @@ function StudentLayoutContent({ children }: StudentLayoutProps) {
               </div>
 
               <div className="border-t border-border pt-4 space-y-1">
-                <Link
-                  href="/demo"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-amber-800 hover:bg-amber-500/10"
-                >
-                  <LayoutGrid
-                    className="h-4 w-4 shrink-0 text-amber-600"
-                    aria-hidden="true"
-                  />
-                  <span>Demo Portals</span>
-                </Link>
-                <Link
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary hover:bg-surface-muted hover:text-danger"
                 >
                   <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
-                  <span>Logout</span>
-                </Link>
+                  <span>Sign Out</span>
+                </button>
               </div>
             </div>
           </div>
@@ -339,14 +317,16 @@ function StudentLayoutContent({ children }: StudentLayoutProps) {
 
 export default function StudentLayout({ children }: StudentLayoutProps) {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-surface text-text-secondary">
-          Loading student layout...
-        </div>
-      }
-    >
-      <StudentLayoutContent>{children}</StudentLayoutContent>
-    </Suspense>
+    <ProtectedRoute allowedRoles={["student", "admin"]}>
+      <Suspense
+        fallback={
+          <div className="flex min-h-screen items-center justify-center bg-surface text-text-secondary">
+            Loading student portal...
+          </div>
+        }
+      >
+        <StudentLayoutContent>{children}</StudentLayoutContent>
+      </Suspense>
+    </ProtectedRoute>
   );
 }

@@ -5,6 +5,7 @@ import { type ReactNode, Suspense } from "react";
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 import { AdminProvider } from "@/context/admin-context";
+import { AuthProvider } from "@/context/auth-context";
 import { OrganiserProvider } from "@/context/organiser-context";
 import { StudentProvider } from "@/context/student-context";
 
@@ -59,16 +60,20 @@ function AppShellContent({ children }: AppShellProps) {
 
 export default function AppShell({ children }: AppShellProps) {
   return (
-    <OrganiserProvider>
-      <AdminProvider>
-        <StudentProvider>
-          <Suspense
-            fallback={<main className="flex flex-1 flex-col">{children}</main>}
-          >
-            <AppShellContent>{children}</AppShellContent>
-          </Suspense>
-        </StudentProvider>
-      </AdminProvider>
-    </OrganiserProvider>
+    <AuthProvider>
+      <OrganiserProvider>
+        <AdminProvider>
+          <StudentProvider>
+            <Suspense
+              fallback={
+                <main className="flex flex-1 flex-col">{children}</main>
+              }
+            >
+              <AppShellContent>{children}</AppShellContent>
+            </Suspense>
+          </StudentProvider>
+        </AdminProvider>
+      </OrganiserProvider>
+    </AuthProvider>
   );
 }

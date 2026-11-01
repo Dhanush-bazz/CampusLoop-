@@ -13,12 +13,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import OrganiserLayout from "@/components/layout/organiser-layout";
+import { useAuth } from "@/context/auth-context";
 import { useOrganiser } from "@/context/organiser-context";
 import { EVENT_CATEGORIES, type EventCategory } from "@/data/events";
 import { isValidHttpUrl } from "@/lib/urls";
 
 export default function CreateEventPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const { createEvent, profile } = useOrganiser();
 
   const [title, setTitle] = useState("");
@@ -86,6 +88,10 @@ export default function CreateEventPage() {
 
     setIsSubmitting(true);
 
+    const activeEmail =
+      user?.email || profile.email || "organiser@campusloop.com";
+    const activeName = clubName || profile.clubName || "Campus Club";
+
     const newEvent = createEvent(
       {
         title: title || "Untitled Draft Event",
@@ -99,7 +105,8 @@ export default function CreateEventPage() {
           deadline || date || new Date().toISOString().split("T")[0],
         registrationUrl,
         bannerUrl,
-        organiserName: clubName,
+        organiserName: activeName,
+        organiserEmail: activeEmail,
       },
       isDraft,
     );
@@ -134,8 +141,8 @@ export default function CreateEventPage() {
               Create Event
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-text-secondary">
-              New events are saved in this browser preview. Admin review is not
-              connected.
+              Submit your campus event proposal for administrative review and
+              publication.
             </p>
           </div>
         </div>

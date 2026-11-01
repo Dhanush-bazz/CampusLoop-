@@ -2,8 +2,10 @@
 
 import {
   AlertCircle,
-  ArrowLeft,
-  CheckCircle2,
+  Check,
+  Copy,
+  Eye,
+  EyeOff,
   Lock,
   Mail,
   ShieldCheck,
@@ -11,46 +13,62 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
+import { useAuth } from "@/context/auth-context";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@college.edu");
-  const [password, setPassword] = useState("adminpass123");
+  const { login } = useAuth();
+  const [email, setEmail] = useState("admin@campusloop.com");
+  const [password, setPassword] = useState("Admin@123");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!email || !password) {
-      setErrorMessage("Invalid email or password.");
+    if (!email.trim() || !password) {
+      setErrorMessage("Please enter your administrator email and password.");
       return;
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const user = await login(email.trim(), password);
+      if (user.role !== "admin") {
+        setErrorMessage(
+          "Access denied. This account does not possess university administrative privileges.",
+        );
+        setIsLoading(false);
+        return;
+      }
       router.push("/admin/dashboard");
-    }, 400);
+    } catch (err) {
+      setErrorMessage(
+        err instanceof Error
+          ? err.message
+          : "Invalid administrator credentials.",
+      );
+      setIsLoading(false);
+    }
   };
 
-  const handleDemoLogin = () => {
-    setEmail("admin@college.edu");
-    setPassword("adminpass123");
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push("/admin/dashboard");
-    }, 200);
+  const handleCopyCredentials = () => {
+    navigator.clipboard.writeText(
+      "Email: admin@campusloop.com\nPassword: Admin@123",
+    );
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-muted/40">
-      {/* Frame 17 Header: LOGO CampusLoop | Admin Console */}
-      <header className="flex h-18 w-full items-center justify-between border-b border-border bg-surface px-6 sm:px-10 py-4">
+      {/* Frame 17 Header */}
+      <header className="flex h-16 w-full items-center justify-between border-b border-border bg-surface px-6 sm:px-10">
         <Link
-          href="/demo"
+          href="/"
           className="flex items-center gap-2 font-bold text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-md"
         >
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white font-black text-sm">
@@ -64,39 +82,39 @@ export default function AdminLoginPage() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div>
           <Link
-            href="/demo"
+            href="/login"
             className="text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
           >
-            Switch Role (Demo)
+            Student Login &rarr;
           </Link>
         </div>
       </header>
 
-      {/* Frame 17 Card (width 420px centred) */}
+      {/* Frame 17 Card */}
       <div className="flex flex-1 items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-[440px] rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-sm">
           {/* Card Title */}
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold tracking-tight text-text-primary">
-              Admin Login
+              University Admin Login
             </h1>
             <p className="mt-1 text-xs text-text-secondary">
-              CampusLoop Faculty & Administration Console
+              Campus event approval console and institutional moderation.
             </p>
           </div>
 
-          {/* Wireframe Info Banner (#f0f5fd fill) */}
+          {/* Wireframe Info Banner */}
           <div className="mb-6 flex items-start gap-3 rounded-lg border border-blue-200 bg-[#f0f5fd] p-3.5 text-xs text-blue-900 leading-relaxed">
             <ShieldCheck className="h-4 w-4 shrink-0 text-blue-600 mt-0.5" />
             <span>
-              Restricted access for authorised administrators. Please sign in
-              with your official university credentials.
+              Restricted access for authorized faculty, deans, and campus
+              administrators.
             </span>
           </div>
 
-          {/* Wireframe Error State Display (#fff0f0 fill) */}
+          {/* Error State Display */}
           {errorMessage && (
             <div
               role="alert"
@@ -120,73 +138,101 @@ export default function AdminLoginPage() {
                 <input
                   id="admin-email"
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@college.edu"
-                  className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
+                  placeholder="admin@campusloop.com"
+                  className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 pl-9 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
+                  autoComplete="email"
                 />
-                <Mail className="absolute right-3 top-2.5 h-4 w-4 text-text-tertiary pointer-events-none" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-text-disabled" />
               </div>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="admin-password"
-                  className="block text-xs font-semibold text-text-primary"
-                >
-                  Password <span className="text-rose-500">*</span>
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs font-medium text-text-secondary hover:text-text-primary hover:underline"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
+              <label
+                htmlFor="admin-password"
+                className="block text-xs font-semibold text-text-primary mb-1.5"
+              >
+                Password <span className="text-rose-500">*</span>
+              </label>
               <div className="relative">
                 <input
                   id="admin-password"
-                  type="password"
-                  required
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
+                  placeholder="Enter admin password"
+                  className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 pl-9 pr-9 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
+                  autoComplete="current-password"
                 />
-                <Lock className="absolute right-3 top-2.5 h-4 w-4 text-text-tertiary pointer-events-none" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-text-disabled" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-text-disabled hover:text-text-primary"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
 
-            {/* Login Button (matches #313131 fill in SVG) */}
+            <div className="flex justify-end">
+              <Link
+                href="/forgot-password"
+                className="text-xs font-semibold text-text-secondary hover:text-primary transition-colors"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-[#313131] py-3 text-sm font-semibold text-white shadow hover:bg-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-50"
+              className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-colors shadow-xs flex items-center justify-center gap-2"
             >
-              {isLoading ? "Authenticating..." : "Login"}
+              {isLoading ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <span>Verifying clearance...</span>
+                </>
+              ) : (
+                <span>Access Admin Console</span>
+              )}
             </button>
           </form>
 
-          {/* Quick Demo Access Helper */}
-          <div className="mt-6 border-t border-border pt-4">
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-purple-300 bg-purple-50/70 py-2.5 text-xs font-semibold text-purple-900 hover:bg-purple-100 transition-colors"
-            >
-              <CheckCircle2 className="h-4 w-4 text-purple-600" />
-              <span>1-Click Demo Login (Campus Administrator)</span>
-            </button>
-            <div className="mt-3 text-center">
-              <Link
-                href="/demo"
-                className="inline-flex items-center gap-1 text-xs text-text-tertiary hover:text-text-primary"
+          {/* Test Credentials Card */}
+          <div className="mt-6 rounded-xl border border-border bg-surface-muted/50 p-3.5 text-xs">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="font-bold text-text-primary">
+                Authorized Admin Test Credentials:
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyCredentials}
+                className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
               >
-                <ArrowLeft className="h-3 w-3" />
-                Back to Demo Portals
-              </Link>
+                {copied ? (
+                  <>
+                    <Check className="h-3 w-3 text-emerald-600" />
+                    <span className="text-emerald-700">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="font-mono text-[11px] text-text-secondary space-y-0.5">
+              <p>Email: admin@campusloop.com</p>
+              <p>Password: Admin@123</p>
             </div>
           </div>
         </div>

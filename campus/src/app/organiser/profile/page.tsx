@@ -211,15 +211,15 @@ export default function OrganiserProfilePage() {
             )}
           </form>
 
-          {/* Reset Demo Data helper */}
+          {/* Reset Sample Data */}
           <div className="border-t border-border pt-6 mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-text-secondary">
-            <span>Development Mode: Reset demo events and profile state</span>
+            <span>Restore default sample events and club profile settings</span>
             <button
               type="button"
               onClick={resetDemoData}
               className="rounded-md border border-border px-3 py-1.5 font-medium hover:bg-surface-muted transition-colors w-fit"
             >
-              Reset Organiser Demo Data
+              Reset Sample Data
             </button>
           </div>
         </div>

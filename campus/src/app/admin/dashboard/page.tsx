@@ -31,6 +31,7 @@ export default function AdminDashboardPage() {
     null,
   );
   const [rejectionReason, setRejectionReason] = useState("");
+  const [rejectionError, setRejectionError] = useState<string | null>(null);
   const [actionToast, setActionToast] = useState<string | null>(null);
 
   const filteredEvents =
@@ -50,18 +51,21 @@ export default function AdminDashboardPage() {
   };
 
   const handleConfirmRejection = () => {
-    if (eventToReject) {
-      const reason =
-        rejectionReason.trim() ||
-        "Submission does not meet campus activity guidelines.";
-      rejectEvent(eventToReject.id, reason);
-      setActionToast(
-        `Event "${eventToReject.title}" rejected. Feedback sent to organiser.`,
-      );
-      setEventToReject(null);
-      setRejectionReason("");
-      setTimeout(() => setActionToast(null), 4000);
+    if (!eventToReject) return;
+
+    if (!rejectionReason.trim()) {
+      setRejectionError("Please provide a rejection reason for the organiser.");
+      return;
     }
+
+    setRejectionError(null);
+    rejectEvent(eventToReject.id, rejectionReason.trim());
+    setActionToast(
+      `Event "${eventToReject.title}" rejected. Feedback sent to organiser.`,
+    );
+    setEventToReject(null);
+    setRejectionReason("");
+    setTimeout(() => setActionToast(null), 4000);
   };
 
   const getStatusBadge = (status: EventApprovalStatus) => {
@@ -427,10 +431,22 @@ export default function AdminDashboardPage() {
                 rows={3}
                 required
                 value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
+                onChange={(e) => {
+                  setRejectionReason(e.target.value);
+                  if (rejectionError) setRejectionError(null);
+                }}
                 placeholder="e.g. Venue booking not confirmed. Please attach approval from facilities office."
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus resize-y"
+                className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-1 resize-y ${
+                  rejectionError
+                    ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500"
+                    : "border-border focus:border-focus focus:ring-focus"
+                }`}
               />
+              {rejectionError && (
+                <p className="mt-1 text-xs font-semibold text-rose-600">
+                  {rejectionError}
+                </p>
+              )}
             </div>
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
@@ -438,6 +454,7 @@ export default function AdminDashboardPage() {
                 onClick={() => {
                   setEventToReject(null);
                   setRejectionReason("");
+                  setRejectionError(null);
                 }}
                 className="rounded-lg border border-border bg-surface px-4 py-2 text-xs font-semibold text-text-secondary hover:bg-surface-muted"
               >

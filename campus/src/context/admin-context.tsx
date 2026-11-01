@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { createContext, useContext, useMemo } from "react";
+import { useAuth } from "@/context/auth-context";
 import { type OrganiserEvent, useOrganiser } from "@/context/organiser-context";
 
 export interface AdminProfile {
@@ -36,7 +37,19 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const { events, updateEvent } = useOrganiser();
+
+  const profile = useMemo<AdminProfile>(() => {
+    if (user && user.role === "admin") {
+      return {
+        name: user.name || DEFAULT_ADMIN_PROFILE.name,
+        email: user.email || DEFAULT_ADMIN_PROFILE.email,
+        role: "Campus Administrator",
+      };
+    }
+    return DEFAULT_ADMIN_PROFILE;
+  }, [user]);
 
   const pendingEvents = useMemo(
     () => events.filter((e) => e.approvalStatus === "Pending"),
@@ -96,7 +109,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         approvedEvents,
         rejectedEvents,
         stats,
-        profile: DEFAULT_ADMIN_PROFILE,
+        profile,
         getEventById,
         approveEvent,
         rejectEvent,

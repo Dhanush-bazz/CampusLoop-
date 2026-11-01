@@ -191,11 +191,11 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
                 <div className="rounded-xl border border-[#9b4a08]/40 bg-[#fff5ed] p-5 text-sm text-[#9b4a08] space-y-2">
                   <div className="flex items-center gap-2 font-bold">
                     <Clock className="h-5 w-5 shrink-0" />
-                    <span>Pending:</span>
+                    <span>Pending Review:</span>
                   </div>
                   <p className="text-xs leading-relaxed">
-                    This event is marked pending in the local preview. Admin
-                    review is not implemented.
+                    This event has been submitted and is currently in the campus
+                    administration moderation queue awaiting approval.
                   </p>
                 </div>
               )}
@@ -207,8 +207,8 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
                     <span>Draft:</span>
                   </div>
                   <p className="text-xs leading-relaxed">
-                    This draft is saved locally in the development preview and
-                    has not been submitted for review.
+                    This event is saved as a draft and has not yet been
+                    submitted for campus administrative review.
                   </p>
                 </div>
               )}
@@ -217,12 +217,11 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
                 <div className="rounded-xl border border-[#067429]/40 bg-[#eaf9ef] p-5 text-sm text-[#067429] space-y-2">
                   <div className="flex items-center gap-2 font-bold">
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
-                    <span>Approved:</span>
+                    <span>Approved &amp; Published:</span>
                   </div>
                   <p className="text-xs leading-relaxed">
-                    This event is marked approved in the organiser demo data.
-                    Student discovery uses a separate sample catalog in this
-                    preview.
+                    This event has been officially approved by campus
+                    administration and is now published for student discovery.
                   </p>
                 </div>
               )}

@@ -29,8 +29,8 @@ export default function MyRemindersPage() {
             My Reminders
           </h1>
           <p className="mt-1 text-sm text-text-secondary">
-            Reminders are saved in this browser preview; notifications are not
-            sent.
+            Keep track of upcoming deadlines and start times for your saved
+            events.
           </p>
         </div>
 

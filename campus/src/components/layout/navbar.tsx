@@ -1,13 +1,18 @@
 "use client";
 
-import { Compass, Menu, X } from "lucide-react";
+import { Compass, Menu, User, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/context/auth-context";
+import { getRoleDashboardPath } from "@/lib/auth/auth-service";
 
 export default function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   const closeMenu = () => setIsOpen(false);
+
+  const dashboardHref = user ? getRoleDashboardPath(user.role) : "/login";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-surface/95 backdrop-blur-md">
@@ -56,24 +61,39 @@ export default function Navbar() {
 
         {/* Right Side: Desktop Action Buttons */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/demo"
-            className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-          >
-            Demo Portals
-          </Link>
-          <Link
-            href="/login"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="inline-flex min-h-9 items-center justify-center rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-          >
-            Sign Up
-          </Link>
+          {isAuthenticated && user ? (
+            <>
+              <Link
+                href={dashboardHref}
+                className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-primary hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <User className="h-3.5 w-3.5 text-primary" />
+                <span>Dashboard ({user.name.split(" ")[0]})</span>
+              </Link>
+              <button
+                type="button"
+                onClick={logout}
+                className="rounded-lg px-3 py-1.5 text-xs font-semibold text-text-secondary hover:text-danger transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                className="inline-flex min-h-9 items-center justify-center rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -127,27 +147,44 @@ export default function Navbar() {
               About
             </Link>
             <div className="mt-4 flex flex-col gap-2.5 border-t border-border pt-4">
-              <Link
-                href="/demo"
-                onClick={closeMenu}
-                className="flex items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 py-2 text-center text-xs font-semibold text-amber-800 hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                Demo Portals
-              </Link>
-              <Link
-                href="/login"
-                onClick={closeMenu}
-                className="flex items-center justify-center rounded-lg border border-border bg-surface py-2.5 text-center text-sm font-medium text-text-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                onClick={closeMenu}
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-              >
-                Sign Up
-              </Link>
+              {isAuthenticated && user ? (
+                <>
+                  <Link
+                    href={dashboardHref}
+                    onClick={closeMenu}
+                    className="flex items-center justify-center rounded-lg border border-border bg-surface py-2.5 text-center text-sm font-semibold text-text-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    Open Dashboard ({user.name.split(" ")[0]})
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeMenu();
+                      logout();
+                    }}
+                    className="flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 py-2.5 text-center text-sm font-semibold text-rose-700 hover:bg-rose-100 focus-visible:outline-none"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={closeMenu}
+                    className="flex items-center justify-center rounded-lg border border-border bg-surface py-2.5 text-center text-sm font-medium text-text-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={closeMenu}
+                    className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>

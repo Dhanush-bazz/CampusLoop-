@@ -78,10 +78,15 @@ export default function ForgotPasswordPage() {
           </div>
         </form>
 
-        {/* Success Confirmation Banner (matching Frame 04 After submit state) */}
+        {/* Success Confirmation Banner */}
         {isSubmitted && (
-          <output className="mt-6 block rounded-lg border border-amber-300 bg-amber-50 p-4 text-center text-sm font-medium text-amber-900">
-            This preview does not send password reset emails.
+          <output className="mt-6 block rounded-lg border border-blue-200 bg-blue-50 p-4 text-center text-xs font-semibold text-blue-900 leading-relaxed">
+            For this campus installation, standard test credentials can be
+            accessed directly on the login page:
+            <br />
+            <strong>Student:</strong> Student@123 &bull;{" "}
+            <strong>Organiser:</strong> Organiser@123 &bull;{" "}
+            <strong>Admin:</strong> Admin@123
           </output>
         )}
 
