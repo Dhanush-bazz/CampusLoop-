@@ -71,23 +71,21 @@ const PORTALS: PortalOption[] = [
   {
     id: "admin",
     name: "Admin Demo",
-    role: "Faculty / University Administrator",
+    role: "Dr. Sunita Rao (Campus Administrator)",
     description:
       "Review pending event submissions from student clubs, approve or reject events with feedback, and manage campus approvals.",
     icon: ShieldCheck,
-    status: "in_development",
-    statusText: "Not Implemented",
+    status: "available",
+    statusText: "Ready for Preview • 6 Screens",
     targetHref: "/admin/dashboard",
     screens: [
-      "Admin Login (Frame 17)",
-      "Admin Dashboard (Frame 18)",
-      "Pending Events Queue (Frame 19)",
-      "Event Approval Review (Frame 20)",
-      "Approved Events Directory (Frame 21)",
-      "Rejected Events Audit (Frame 22)",
+      "Admin Login (/admin/login)",
+      "Admin Dashboard (/admin/dashboard)",
+      "Pending Events Queue (/admin/events/pending)",
+      "Event Approval Review (/admin/events/[id]/review)",
+      "Approved Events Directory (/admin/events/approved)",
+      "Rejected Events Audit (/admin/events/rejected)",
     ],
-    underDevNote:
-      "Admin screens are present in the wireframe but are not implemented yet. This preview does not include admin routes or event moderation.",
   },
 ];
 
@@ -292,7 +290,8 @@ export default function DemoPortalPage() {
             </div>
 
             <p className="text-sm leading-relaxed text-text-secondary">
-              {activeModal.underDevNote}
+              {activeModal.underDevNote ??
+                `${activeModal.name} is not available for preview yet.`}
             </p>
 
             <div className="rounded-xl border border-border bg-surface-muted p-4 space-y-2">
