@@ -7,11 +7,13 @@ import { useStudent } from "@/context/student-context";
 import { DUMMY_EVENTS } from "@/data/events";
 
 export default function MyRegistrationsPage() {
-  const { registrations, removeRegistration } = useStudent();
+  const { registrations, removeRegistration, getEventById } = useStudent();
 
   // Map registered items to event records
   const registeredEvents = registrations.map((reg) => {
-    const event = DUMMY_EVENTS.find((e) => e.id === reg.eventId);
+    const event =
+      getEventById(reg.eventId) ||
+      DUMMY_EVENTS.find((e) => e.id === reg.eventId);
     return {
       reg,
       event,

@@ -7,11 +7,13 @@ import { useStudent } from "@/context/student-context";
 import { DUMMY_EVENTS } from "@/data/events";
 
 export default function MyRemindersPage() {
-  const { reminders, removeReminder } = useStudent();
+  const { reminders, removeReminder, getEventById } = useStudent();
 
   // Map reminders to their event data
   const reminderList = reminders.map((rem) => {
-    const event = DUMMY_EVENTS.find((e) => e.id === rem.eventId);
+    const event =
+      getEventById(rem.eventId) ||
+      DUMMY_EVENTS.find((e) => e.id === rem.eventId);
     return {
       rem,
       event,

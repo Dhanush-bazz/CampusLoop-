@@ -21,9 +21,8 @@ interface EventDetailPageProps {
 
 function EventDetailInner({ params }: EventDetailPageProps) {
   const { id } = use(params);
-  const event = DUMMY_EVENTS.find((e) => e.id === id);
-
   const {
+    getEventById,
     isBookmarked,
     toggleBookmark,
     isRegistered,
@@ -31,6 +30,8 @@ function EventDetailInner({ params }: EventDetailPageProps) {
     removeRegistration,
     addReminder,
   } = useStudent();
+
+  const event = getEventById(id) || DUMMY_EVENTS.find((e) => e.id === id);
 
   // Reminder Modal State
   const [reminderModalOpen, setReminderModalOpen] = useState(false);

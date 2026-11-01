@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import StudentEventCard from "@/components/events/student-event-card";
 import StudentLayout from "@/components/layout/student-layout";
-import { useBookmarks } from "@/context/bookmark-context";
+import { useStudent } from "@/context/student-context";
 import {
   DUMMY_EVENTS,
   type EventCategory,
@@ -41,7 +41,9 @@ function ExploreContent() {
   const initialQuery = searchParams.get("q") || "";
   const bookmarkedOnly = searchParams.get("bookmarked") === "true";
 
-  const { isBookmarked } = useBookmarks();
+  const { isBookmarked, allEvents } = useStudent();
+  const eventsList =
+    allEvents && allEvents.length > 0 ? allEvents : DUMMY_EVENTS;
 
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState(initialQuery);
@@ -66,60 +68,64 @@ function ExploreContent() {
 
   // Filter and sort events
   const filteredEvents = useMemo(() => {
-    return DUMMY_EVENTS.filter((event) => {
-      // Bookmarked filter if accessed via Bookmarked Events sidebar link
-      if (bookmarkedOnly && !isBookmarked(event.id)) {
-        return false;
-      }
+    return eventsList
+      .filter((event) => {
+        // Bookmarked filter if accessed via Bookmarked Events sidebar link
+        if (bookmarkedOnly && !isBookmarked(event.id)) {
+          return false;
+        }
 
-      // Category tab filter
-      if (activeCategory !== "All" && event.category !== activeCategory) {
-        return false;
-      }
+        // Category tab filter
+        if (activeCategory !== "All" && event.category !== activeCategory) {
+          return false;
+        }
 
-      // Search query filter (title, organiser, venue, category, or description)
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchesTitle = event.title.toLowerCase().includes(query);
-        const matchesCategory = event.category.toLowerCase().includes(query);
-        const matchesOrganiser = event.organiser.toLowerCase().includes(query);
-        const matchesVenue = event.venue.toLowerCase().includes(query);
-        const matchesDescription = event.description
-          .toLowerCase()
-          .includes(query);
+        // Search query filter (title, organiser, venue, category, or description)
+        if (searchQuery.trim()) {
+          const query = searchQuery.toLowerCase();
+          const matchesTitle = event.title.toLowerCase().includes(query);
+          const matchesCategory = event.category.toLowerCase().includes(query);
+          const matchesOrganiser = event.organiser
+            .toLowerCase()
+            .includes(query);
+          const matchesVenue = event.venue.toLowerCase().includes(query);
+          const matchesDescription = event.description
+            .toLowerCase()
+            .includes(query);
+          if (
+            !matchesTitle &&
+            !matchesCategory &&
+            !matchesOrganiser &&
+            !matchesVenue &&
+            !matchesDescription
+          ) {
+            return false;
+          }
+        }
+
+        // Date filter
         if (
-          !matchesTitle &&
-          !matchesCategory &&
-          !matchesOrganiser &&
-          !matchesVenue &&
-          !matchesDescription
+          selectedDate !== "All" &&
+          currentDate &&
+          !isEventInDateRange(event.date, selectedDate, currentDate)
         ) {
           return false;
         }
-      }
 
-      // Date filter
-      if (
-        selectedDate !== "All" &&
-        currentDate &&
-        !isEventInDateRange(event.date, selectedDate, currentDate)
-      ) {
-        return false;
-      }
-
-      return true;
-    }).sort((a, b) => {
-      const dateA = getEventDateTimestamp(a.date) ?? Number.POSITIVE_INFINITY;
-      const dateB = getEventDateTimestamp(b.date) ?? Number.POSITIVE_INFINITY;
-      if (selectedSort === "recent") {
-        return dateB - dateA;
-      }
-      if (selectedSort === "alpha") {
-        return a.title.localeCompare(b.title);
-      }
-      // default: upcoming
-      return dateA - dateB;
-    });
+        return true;
+      })
+      .sort((a, b) => {
+        const dateA = getEventDateTimestamp(a.date) ?? Number.POSITIVE_INFINITY;
+        const dateB = getEventDateTimestamp(b.date) ?? Number.POSITIVE_INFINITY;
+        if (selectedSort === "recent") {
+          return dateB - dateA;
+        }
+        if (selectedSort === "alpha") {
+          return a.title.localeCompare(b.title);
+        }
+        // default: upcoming
+        return dateA - dateB;
+      });
   }, [
     activeCategory,
     currentDate,
@@ -128,6 +134,7 @@ function ExploreContent() {
     selectedSort,
     bookmarkedOnly,
     isBookmarked,
+    eventsList,
   ]);
 
   // Pagination calculation

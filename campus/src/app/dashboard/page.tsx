@@ -24,7 +24,10 @@ import {
 } from "@/data/events";
 
 export default function StudentDashboardPage() {
-  const { profile, reminders, isBookmarked, toggleBookmark } = useStudent();
+  const { profile, reminders, isBookmarked, toggleBookmark, allEvents } =
+    useStudent();
+  const eventsList =
+    allEvents && allEvents.length > 0 ? allEvents : DUMMY_EVENTS;
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -37,7 +40,10 @@ export default function StudentDashboardPage() {
   const [selectedSort, setSelectedSort] = useState<string>("upcoming");
 
   // Featured carousel state
-  const featuredEvents = DUMMY_EVENTS.filter((e) => e.featured);
+  const featuredEvents =
+    eventsList.filter((e) => e.featured).length > 0
+      ? eventsList.filter((e) => e.featured)
+      : eventsList.slice(0, 4);
   const [carouselIndex, setCarouselIndex] = useState(0);
 
   const prevSlide = () => {
@@ -65,35 +71,43 @@ export default function StudentDashboardPage() {
   };
 
   // Filter upcoming events for the Upcoming Events grid
-  const filteredUpcoming = DUMMY_EVENTS.filter((event) => {
-    if (currentDate && !isUpcomingEvent(event.date, currentDate)) return false;
-    if (selectedCategory !== "All" && event.category !== selectedCategory) {
-      return false;
-    }
-    if (
-      selectedDate !== "All" &&
-      currentDate &&
-      !isEventInDateRange(event.date, selectedDate, currentDate)
-    ) {
-      return false;
-    }
-    return true;
-  }).sort((a, b) => {
-    const dateA = getEventDateTimestamp(a.date) ?? Number.POSITIVE_INFINITY;
-    const dateB = getEventDateTimestamp(b.date) ?? Number.POSITIVE_INFINITY;
-    if (selectedSort === "recent") {
-      return dateB - dateA;
-    }
-    return dateA - dateB;
-  });
+  const filteredUpcoming = eventsList
+    .filter((event) => {
+      if (currentDate && !isUpcomingEvent(event.date, currentDate))
+        return false;
+      if (selectedCategory !== "All" && event.category !== selectedCategory) {
+        return false;
+      }
+      if (
+        selectedDate !== "All" &&
+        currentDate &&
+        !isEventInDateRange(event.date, selectedDate, currentDate)
+      ) {
+        return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      const dateA = getEventDateTimestamp(a.date) ?? Number.POSITIVE_INFINITY;
+      const dateB = getEventDateTimestamp(b.date) ?? Number.POSITIVE_INFINITY;
+      if (selectedSort === "recent") {
+        return dateB - dateA;
+      }
+      return dateA - dateB;
+    });
 
   // Upcoming Events section displays the first 3 events matching Frame 05
   const upcomingEvents = filteredUpcoming.slice(0, 3);
 
-  // Recently added items specified in Frame 05
-  const recentlyAdded = DUMMY_EVENTS.filter(
-    (event) => event.id === "photography-walk" || event.id === "robotics-expo",
-  );
+  // Recently added items: either specific IDs or latest added events
+  const recentlyAdded = eventsList
+    .filter(
+      (event) =>
+        event.id === "photography-walk" ||
+        event.id === "robotics-expo" ||
+        event.id.startsWith("org-event-"),
+    )
+    .slice(0, 2);
 
   // The 6 categories in Frame 05 Explore Categories
   const exploreCategories: { name: string; category: EventCategory }[] = [
@@ -116,7 +130,7 @@ export default function StudentDashboardPage() {
           <p className="text-sm text-text-secondary sm:text-base">
             You have{" "}
             {currentDate
-              ? DUMMY_EVENTS.filter(
+              ? eventsList.filter(
                   (event) =>
                     isUpcomingEvent(event.date, currentDate) &&
                     isEventInDateRange(event.date, "this-week", currentDate),

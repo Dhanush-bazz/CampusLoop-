@@ -7,10 +7,12 @@ import { useStudent } from "@/context/student-context";
 import { DUMMY_EVENTS } from "@/data/events";
 
 export default function BookmarkedEventsPage() {
-  const { bookmarkedIds, removeBookmark } = useStudent();
+  const { bookmarkedIds, removeBookmark, allEvents } = useStudent();
+  const eventsList =
+    allEvents && allEvents.length > 0 ? allEvents : DUMMY_EVENTS;
 
   // Find the actual events corresponding to the bookmarked IDs
-  const bookmarkedEvents = DUMMY_EVENTS.filter((e) =>
+  const bookmarkedEvents = eventsList.filter((e) =>
     bookmarkedIds.includes(e.id),
   );
 
