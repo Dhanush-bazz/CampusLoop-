@@ -23,8 +23,10 @@ export interface OrganiserEvent {
   registrationUrl: string;
   bannerUrl: string;
   organiserName: string;
+  organiserEmail?: string;
   submissionDate: string;
   approvalStatus: EventApprovalStatus;
+  approvalDate?: string;
   adminFeedback?: string;
 }
 
@@ -58,7 +60,9 @@ const INITIAL_ORGANISER_EVENTS: OrganiserEvent[] = [
     bannerUrl:
       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
     organiserName: "IEEE Student Branch",
+    organiserEmail: "ieee@college.edu",
     submissionDate: "2026-10-20",
+    approvalDate: "2026-10-22",
     approvalStatus: "Approved",
   },
   {
@@ -76,6 +80,7 @@ const INITIAL_ORGANISER_EVENTS: OrganiserEvent[] = [
     bannerUrl:
       "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80",
     organiserName: "Robotics Club",
+    organiserEmail: "robotics@college.edu",
     submissionDate: "2026-10-28",
     approvalStatus: "Pending",
   },
@@ -94,6 +99,7 @@ const INITIAL_ORGANISER_EVENTS: OrganiserEvent[] = [
     bannerUrl:
       "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
     organiserName: "Music Club",
+    organiserEmail: "music@college.edu",
     submissionDate: "2026-10-25",
     approvalStatus: "Rejected",
     adminFeedback:
@@ -114,8 +120,68 @@ const INITIAL_ORGANISER_EVENTS: OrganiserEvent[] = [
     bannerUrl:
       "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80",
     organiserName: "Coding Club",
+    organiserEmail: "codingclub@college.edu",
     submissionDate: "2026-10-18",
+    approvalDate: "2026-10-20",
     approvalStatus: "Approved",
+  },
+  {
+    id: "org-event-5",
+    title: "Photography Walk",
+    description:
+      "Golden hour photo expedition across campus botanical garden and lake. Learn manual DSLR settings, framing, and light composition.",
+    category: "Club Activity",
+    date: "2026-11-25",
+    startTime: "16:00",
+    endTime: "18:30",
+    venue: "Campus Lake & Botanical Garden",
+    registrationDeadline: "2026-11-23",
+    registrationUrl: "https://forms.example/photowalk",
+    bannerUrl:
+      "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=1200&q=80",
+    organiserName: "Photo Society",
+    organiserEmail: "photosoc@college.edu",
+    submissionDate: "2026-10-27",
+    approvalStatus: "Pending",
+  },
+  {
+    id: "org-event-6",
+    title: "Startup Pitch Day",
+    description:
+      "Annual collegiate startup pitch competition. Pitch to angel investors and venture capitalists with seed funding awards.",
+    category: "Competition",
+    date: "2026-12-05",
+    startTime: "09:30",
+    endTime: "17:00",
+    venue: "MBA Seminar Hall",
+    registrationDeadline: "2026-11-30",
+    registrationUrl: "https://forms.example/pitchday",
+    bannerUrl:
+      "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80",
+    organiserName: "E-Cell",
+    organiserEmail: "ecell@college.edu",
+    submissionDate: "2026-10-26",
+    approvalStatus: "Pending",
+  },
+  {
+    id: "org-event-7",
+    title: "Late Night Gaming",
+    description:
+      "Inter-hostel LAN gaming championship featuring Valorant, FIFA, and Rocket League tournaments.",
+    category: "Technical Event",
+    date: "2026-11-20",
+    startTime: "21:00",
+    endTime: "03:00",
+    venue: "Student Activity Center",
+    registrationDeadline: "2026-11-18",
+    registrationUrl: "https://forms.example/gamingnight",
+    bannerUrl:
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+    organiserName: "Gaming Society",
+    organiserEmail: "gaming@college.edu",
+    submissionDate: "2026-10-21",
+    approvalStatus: "Rejected",
+    adminFeedback: "Timing violates campus curfew policy.",
   },
 ];
 
@@ -136,7 +202,7 @@ interface OrganiserContextType {
   resetDemoData: () => void;
 }
 
-const OrganiserContext = createContext<OrganiserContextType | undefined>(
+export const OrganiserContext = createContext<OrganiserContextType | undefined>(
   undefined,
 );
 

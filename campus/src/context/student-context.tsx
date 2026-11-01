@@ -5,8 +5,19 @@ import {
   type ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
+import {
+  OrganiserContext,
+  type OrganiserEvent,
+} from "@/context/organiser-context";
+import {
+  DUMMY_EVENTS,
+  EVENT_CATEGORIES,
+  type Event,
+  type EventCategory,
+} from "@/data/events";
 import { readStoredJSON, writeStoredJSON } from "@/lib/storage";
 
 export interface StudentProfile {
@@ -52,6 +63,10 @@ interface StudentContextType {
   reminders: ReminderItem[];
   addReminder: (reminder: Omit<ReminderItem, "id" | "createdAt">) => void;
   removeReminder: (id: string) => void;
+
+  // Unified Events (Static + Approved Organiser Submissions)
+  allEvents: Event[];
+  getEventById: (id: string) => Event | undefined;
 }
 
 const StudentContext = createContext<StudentContextType | undefined>(undefined);
@@ -150,7 +165,46 @@ const INITIAL_REMINDERS: ReminderItem[] = [
   },
 ];
 
+function mapOrganiserEventToEvent(org: OrganiserEvent): Event {
+  const matchedCategory = EVENT_CATEGORIES.find(
+    (c) => c.toLowerCase() === org.category.toLowerCase(),
+  );
+
+  return {
+    id: org.id,
+    title: org.title,
+    category: (matchedCategory || "Workshop") as EventCategory,
+    date: org.date,
+    startTime: org.startTime,
+    endTime: org.endTime,
+    venue: org.venue,
+    organiser: org.organiserName,
+    description: org.description,
+    registrationDeadline: org.registrationDeadline,
+    registrationLink: org.registrationUrl,
+    image: org.bannerUrl,
+    featured: false,
+  };
+}
+
 export function StudentProvider({ children }: { children: ReactNode }) {
+  const organiserCtx = useContext(OrganiserContext);
+  const organiserEvents = organiserCtx?.events ?? [];
+
+  const allEvents = useMemo(() => {
+    const approvedOrgEvents = organiserEvents
+      .filter((e) => e.approvalStatus === "Approved")
+      .map(mapOrganiserEventToEvent);
+
+    const orgEventIds = new Set(approvedOrgEvents.map((e) => e.id));
+    const baseEvents = DUMMY_EVENTS.filter((e) => !orgEventIds.has(e.id));
+
+    return [...baseEvents, ...approvedOrgEvents];
+  }, [organiserEvents]);
+
+  const getEventById = (id: string): Event | undefined => {
+    return allEvents.find((e) => e.id === id);
+  };
   const [profile, setProfile] = useState<StudentProfile>(DEFAULT_PROFILE);
   const [bookmarkedIds, setBookmarkedIds] =
     useState<string[]>(INITIAL_BOOKMARKS);
@@ -292,6 +346,8 @@ export function StudentProvider({ children }: { children: ReactNode }) {
         reminders,
         addReminder,
         removeReminder,
+        allEvents,
+        getEventById,
       }}
     >
       {children}
