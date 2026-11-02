@@ -16,6 +16,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, Suspense, useEffect, useState } from "react";
 import ProtectedRoute from "@/components/auth/protected-route";
+import ProfileImageModal from "@/components/profile/profile-image-modal";
+import UserAvatar from "@/components/profile/user-avatar";
 import { useAdmin } from "@/context/admin-context";
 import { useAuth } from "@/context/auth-context";
 
@@ -25,9 +27,10 @@ interface AdminLayoutProps {
 
 function AdminLayoutContent({ children }: AdminLayoutProps) {
   const pathname = usePathname();
-  const { profile, stats } = useAdmin();
+  const { profile, stats, updateProfile } = useAdmin();
   const { logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -112,19 +115,29 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           </Link>
         </div>
 
-        {/* Right: Admin Profile */}
+        {/* Right: Admin Profile with Photo Option */}
         <div className="flex items-center gap-3 sm:gap-4">
-          <div
-            className="flex items-center gap-2 rounded-full p-1"
-            title={`${profile.name} (${profile.role})`}
+          <button
+            type="button"
+            onClick={() => setIsPhotoModalOpen(true)}
+            className="group flex items-center gap-2 rounded-full p-1 hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-colors cursor-pointer"
+            title={`Click to change photo • ${profile.name} (${profile.role})`}
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-700 text-xs font-bold text-white ring-2 ring-purple-600/20">
-              {initials}
+            <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-purple-700 text-xs font-bold text-white ring-2 ring-purple-600/20 overflow-hidden shrink-0">
+              <UserAvatar
+                src={profile.profileImage}
+                alt={profile.name}
+                fallback={initials}
+                className="flex items-center justify-center text-xs font-bold text-white"
+              />
             </div>
             <span className="hidden text-sm font-semibold text-text-primary md:inline">
               {profile.name}
             </span>
-          </div>
+            <span className="text-[11px] text-primary hidden lg:inline font-medium group-hover:underline">
+              (Change Photo)
+            </span>
+          </button>
         </div>
       </header>
 
@@ -319,6 +332,17 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           {children}
         </main>
       </div>
+
+      <ProfileImageModal
+        isOpen={isPhotoModalOpen}
+        onClose={() => setIsPhotoModalOpen(false)}
+        currentImage={profile.profileImage}
+        fallbackInitials={initials}
+        onSave={(newImage) => {
+          updateProfile({ profileImage: newImage });
+        }}
+        title="Update Admin Profile Photo"
+      />
     </div>
   );
 }

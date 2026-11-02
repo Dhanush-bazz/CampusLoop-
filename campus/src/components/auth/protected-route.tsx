@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import { getRoleDashboardPath } from "@/lib/auth/auth-service";
 import type { UserRole } from "@/lib/auth/auth-types";
@@ -18,9 +18,14 @@ export default function ProtectedRoute({
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    if (isLoading) return;
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasMounted || isLoading) return;
 
     if (!isAuthenticated || !user) {
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
@@ -31,9 +36,17 @@ export default function ProtectedRoute({
       // Role mismatch: redirect to their authorized role dashboard
       router.replace(getRoleDashboardPath(user.role));
     }
-  }, [isLoading, isAuthenticated, user, allowedRoles, router, pathname]);
+  }, [
+    hasMounted,
+    isLoading,
+    isAuthenticated,
+    user,
+    allowedRoles,
+    router,
+    pathname,
+  ]);
 
-  if (isLoading) {
+  if (!hasMounted || isLoading) {
     return (
       <div className="flex min-h-[60vh] w-full flex-col items-center justify-center p-8">
         <div className="h-8 w-8 animate-spin rounded-full border-3 border-border border-t-primary" />

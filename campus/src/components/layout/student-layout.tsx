@@ -16,6 +16,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type FormEvent, type ReactNode, Suspense, useState } from "react";
 import ProtectedRoute from "@/components/auth/protected-route";
+import UserAvatar from "@/components/profile/user-avatar";
 import { useAuth } from "@/context/auth-context";
 import { useStudent } from "@/context/student-context";
 
@@ -167,8 +168,13 @@ function StudentLayoutContent({ children }: StudentLayoutProps) {
             className="flex items-center gap-2 rounded-lg border border-border bg-surface-muted px-2.5 py-1.5 text-xs font-semibold text-text-primary hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             aria-label={`Student Profile: ${profile.fullName}`}
           >
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white">
-              {initials}
+            <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white overflow-hidden shrink-0">
+              <UserAvatar
+                src={profile.profileImage}
+                alt={profile.fullName}
+                fallback={initials}
+                className="flex items-center justify-center text-[11px] font-bold text-white"
+              />
             </div>
             <span className="hidden sm:inline">Me</span>
           </Link>

@@ -1,8 +1,10 @@
 "use client";
 
-import { Check, Edit3, LogOut, X } from "lucide-react";
+import { Camera, Check, Edit3, LogOut, X } from "lucide-react";
 import { useState } from "react";
 import StudentLayout from "@/components/layout/student-layout";
+import ProfileImageModal from "@/components/profile/profile-image-modal";
+import UserAvatar from "@/components/profile/user-avatar";
 import { useAuth } from "@/context/auth-context";
 import { useStudent } from "@/context/student-context";
 
@@ -11,6 +13,7 @@ export default function StudentProfilePage() {
   const { profile, updateProfile } = useStudent();
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [fullName, setFullName] = useState(profile.fullName);
   const [collegeName, setCollegeName] = useState(profile.collegeName);
   const [errorName, setErrorName] = useState("");
@@ -107,14 +110,36 @@ export default function StudentProfilePage() {
         {/* Profile Card matching Frame 11 */}
         <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-xs">
           <div className="flex flex-col gap-8 md:flex-row md:items-start">
-            {/* Student Photo Circle matching Frame 11 */}
+            {/* Student Photo Circle matching Frame 11 with interactive photo option */}
             <div className="flex flex-col items-center gap-3">
-              <div className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-border bg-surface-muted text-xl font-bold text-text-primary shadow-xs">
-                <span>{initials}</span>
+              <div className="relative group">
+                <div className="relative flex h-28 w-28 items-center justify-center rounded-full border-2 border-primary/30 bg-surface-muted text-xl font-bold text-text-primary shadow-xs overflow-hidden">
+                  <UserAvatar
+                    src={profile.profileImage}
+                    alt={profile.fullName}
+                    fallback={initials}
+                    className="flex items-center justify-center text-xl font-bold text-text-primary"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsPhotoModalOpen(true)}
+                  className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-all group-hover:scale-105"
+                  aria-label="Change profile photo"
+                  title="Change profile photo"
+                >
+                  <Camera className="h-4 w-4" />
+                </button>
               </div>
-              <span className="text-xs font-medium text-text-secondary">
-                Photo
-              </span>
+
+              <button
+                type="button"
+                onClick={() => setIsPhotoModalOpen(true)}
+                className="text-xs font-semibold text-primary hover:underline focus-visible:outline-none"
+              >
+                Change Photo
+              </button>
             </div>
 
             {/* Profile Fields matching Frame 11 */}
@@ -248,6 +273,19 @@ export default function StudentProfilePage() {
             </form>
           </div>
         </div>
+
+        <ProfileImageModal
+          isOpen={isPhotoModalOpen}
+          onClose={() => setIsPhotoModalOpen(false)}
+          currentImage={profile.profileImage}
+          fallbackInitials={initials}
+          onSave={(newImage) => {
+            updateProfile({ profileImage: newImage });
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+          }}
+          title="Update Student Photo"
+        />
       </div>
     </StudentLayout>
   );

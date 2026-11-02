@@ -3,6 +3,7 @@
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "@/context/auth-context";
+import { authService } from "@/lib/auth/auth-service";
 import {
   readStoredJSON,
   removeStoredValues,
@@ -36,6 +37,7 @@ export interface OrganiserProfile {
   email: string;
   clubName: string;
   department: string;
+  profileImage?: string;
 }
 
 const DEFAULT_ORGANISER_PROFILE: OrganiserProfile = {
@@ -246,7 +248,8 @@ function isOrganiserProfile(value: unknown): value is OrganiserProfile {
     typeof value.name === "string" &&
     typeof value.email === "string" &&
     typeof value.clubName === "string" &&
-    typeof value.department === "string"
+    typeof value.department === "string" &&
+    (value.profileImage === undefined || typeof value.profileImage === "string")
   );
 }
 
@@ -267,6 +270,7 @@ export function OrganiserProvider({ children }: { children: React.ReactNode }) {
         name: user.name || prev.name,
         email: user.email || prev.email,
         department: user.department || prev.department,
+        profileImage: user.profileImage || prev.profileImage,
       }));
     }
   }, [user]);
@@ -330,7 +334,21 @@ export function OrganiserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateProfile = (updates: Partial<OrganiserProfile>) => {
-    setProfile((prev) => ({ ...prev, ...updates }));
+    setProfile((prev) => {
+      const next = { ...prev, ...updates };
+      if (user && user.role === "organiser") {
+        try {
+          authService.updateUser(user.id, {
+            name: next.name,
+            department: next.department,
+            profileImage: next.profileImage,
+          });
+        } catch (e) {
+          console.error("Failed to sync auth user profile", e);
+        }
+      }
+      return next;
+    });
   };
 
   const resetDemoData = () => {

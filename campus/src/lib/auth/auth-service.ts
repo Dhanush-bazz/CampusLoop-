@@ -18,6 +18,7 @@ export interface IAuthService {
   authenticate(email: string, password: string): Promise<AuthUser>;
   registerStudent(data: StudentRegistrationData): Promise<AuthUser>;
   resolveCurrentSessionUser(): AuthUser | null;
+  updateUser(userId: string, updates: Partial<AuthUser>): AuthUser;
   clearSession(): void;
 }
 

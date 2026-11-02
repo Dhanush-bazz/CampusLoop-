@@ -4,11 +4,13 @@ import type React from "react";
 import { createContext, useContext, useMemo } from "react";
 import { useAuth } from "@/context/auth-context";
 import { type OrganiserEvent, useOrganiser } from "@/context/organiser-context";
+import { authService } from "@/lib/auth/auth-service";
 
 export interface AdminProfile {
   name: string;
   email: string;
   role: string;
+  profileImage?: string;
 }
 
 const DEFAULT_ADMIN_PROFILE: AdminProfile = {
@@ -32,6 +34,7 @@ interface AdminContextType {
   getEventById: (id: string) => OrganiserEvent | undefined;
   approveEvent: (id: string) => void;
   rejectEvent: (id: string, reason: string) => void;
+  updateProfile: (updated: Partial<AdminProfile>) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -46,10 +49,24 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         name: user.name || DEFAULT_ADMIN_PROFILE.name,
         email: user.email || DEFAULT_ADMIN_PROFILE.email,
         role: "Campus Administrator",
+        profileImage: user.profileImage || DEFAULT_ADMIN_PROFILE.profileImage,
       };
     }
     return DEFAULT_ADMIN_PROFILE;
   }, [user]);
+
+  const updateProfile = (updated: Partial<AdminProfile>) => {
+    if (user && user.role === "admin") {
+      try {
+        authService.updateUser(user.id, {
+          name: updated.name ?? user.name,
+          profileImage: updated.profileImage,
+        });
+      } catch (e) {
+        console.error("Failed to sync admin profile", e);
+      }
+    }
+  };
 
   const pendingEvents = useMemo(
     () => events.filter((e) => e.approvalStatus === "Pending"),
@@ -113,6 +130,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         getEventById,
         approveEvent,
         rejectEvent,
+        updateProfile,
       }}
     >
       {children}

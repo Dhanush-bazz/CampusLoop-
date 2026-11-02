@@ -14,6 +14,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, Suspense, useState } from "react";
 import ProtectedRoute from "@/components/auth/protected-route";
+import UserAvatar from "@/components/profile/user-avatar";
 import { useAuth } from "@/context/auth-context";
 import { useOrganiser } from "@/context/organiser-context";
 
@@ -109,8 +110,13 @@ function OrganiserLayoutContent({ children }: OrganiserLayoutProps) {
             href="/organiser/profile"
             className="flex items-center gap-2 rounded-full p-1 hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-colors"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white ring-2 ring-primary/20">
-              {initials}
+            <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white ring-2 ring-primary/20 overflow-hidden shrink-0">
+              <UserAvatar
+                src={profile.profileImage}
+                alt={profile.name}
+                fallback={initials}
+                className="flex items-center justify-center text-xs font-bold text-white"
+              />
             </div>
             <span className="hidden text-sm font-semibold text-text-primary md:inline">
               {profile.name}

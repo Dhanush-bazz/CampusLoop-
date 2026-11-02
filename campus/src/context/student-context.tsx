@@ -20,12 +20,14 @@ import {
   type EventCategory,
   getEventDateTimestamp,
 } from "@/data/events";
+import { authService } from "@/lib/auth/auth-service";
 import { readStoredJSON, writeStoredJSON } from "@/lib/storage";
 
 export interface StudentProfile {
   fullName: string;
   email: string;
   collegeName: string;
+  profileImage?: string;
 }
 
 export interface RegistrationItem {
@@ -82,7 +84,8 @@ function isStudentProfile(value: unknown): value is StudentProfile {
     isRecord(value) &&
     typeof value.fullName === "string" &&
     typeof value.email === "string" &&
-    typeof value.collegeName === "string"
+    typeof value.collegeName === "string" &&
+    (value.profileImage === undefined || typeof value.profileImage === "string")
   );
 }
 
@@ -266,6 +269,7 @@ export function StudentProvider({ children }: { children: ReactNode }) {
         fullName: user.name || prev.fullName,
         email: user.email || prev.email,
         collegeName: user.collegeName || prev.collegeName,
+        profileImage: user.profileImage || prev.profileImage,
       }));
     }
   }, [user]);
@@ -308,6 +312,17 @@ export function StudentProvider({ children }: { children: ReactNode }) {
     setProfile((prev) => {
       const next = { ...prev, ...updated };
       writeStoredJSON("campusloop_profile", next);
+      if (user && user.role === "student") {
+        try {
+          authService.updateUser(user.id, {
+            name: next.fullName,
+            collegeName: next.collegeName,
+            profileImage: next.profileImage,
+          });
+        } catch (e) {
+          console.error("Failed to sync auth user profile", e);
+        }
+      }
       return next;
     });
   };

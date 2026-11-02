@@ -18,6 +18,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<AuthUser>;
   registerStudent: (data: StudentRegistrationData) => Promise<AuthUser>;
+  updateUserProfile: (updates: Partial<AuthUser>) => Promise<AuthUser>;
   logout: () => void;
 }
 
@@ -60,6 +61,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const updateUserProfile = useCallback(
+    async (updates: Partial<AuthUser>): Promise<AuthUser> => {
+      if (!user) throw new Error("No authenticated user to update.");
+      const updated = authService.updateUser(user.id, updates);
+      setUser(updated);
+      return updated;
+    },
+    [user],
+  );
+
   const logout = useCallback(() => {
     authService.clearSession();
     setUser(null);
@@ -74,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         registerStudent,
+        updateUserProfile,
         logout,
       }}
     >

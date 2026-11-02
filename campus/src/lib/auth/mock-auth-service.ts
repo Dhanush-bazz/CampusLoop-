@@ -61,7 +61,47 @@ export class MockAuthService {
   }
 
   public getAllUsers(): MockUser[] {
-    return [...MOCK_USERS, ...this.getRegisteredUsers()];
+    const registered = this.getRegisteredUsers();
+    const registeredIds = new Set(registered.map((u) => u.id));
+    const baseline = MOCK_USERS.filter((u) => !registeredIds.has(u.id));
+    return [...baseline, ...registered];
+  }
+
+  public updateUser(userId: string, updates: Partial<MockUser>): AuthUser {
+    const registered = this.getRegisteredUsers();
+    const existingIndex = registered.findIndex((u) => u.id === userId);
+
+    let updatedUser: MockUser;
+    if (existingIndex >= 0) {
+      updatedUser = {
+        ...registered[existingIndex],
+        ...updates,
+      };
+      registered[existingIndex] = updatedUser;
+      this.saveRegisteredUsers(registered);
+    } else {
+      const mockUser = MOCK_USERS.find((u) => u.id === userId);
+      if (!mockUser) {
+        throw new Error(`User with ID ${userId} not found.`);
+      }
+      updatedUser = {
+        ...mockUser,
+        ...updates,
+      };
+      this.saveRegisteredUsers([...registered, updatedUser]);
+    }
+
+    // If this is the active session user, update session as well
+    const activeSession = this.getStoredSession();
+    if (activeSession && activeSession.userId === userId) {
+      this.saveSession({
+        ...activeSession,
+        email: updatedUser.email,
+        role: updatedUser.role,
+      });
+    }
+
+    return sanitizeUser(updatedUser);
   }
 
   public findUserByEmail(email: string): MockUser | undefined {

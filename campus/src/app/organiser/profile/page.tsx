@@ -3,6 +3,7 @@
 import {
   ArrowLeft,
   Building2,
+  Camera,
   CheckCircle2,
   Mail,
   Shield,
@@ -11,6 +12,8 @@ import {
 import Link from "next/link";
 import { type FormEvent, useState } from "react";
 import OrganiserLayout from "@/components/layout/organiser-layout";
+import ProfileImageModal from "@/components/profile/profile-image-modal";
+import UserAvatar from "@/components/profile/user-avatar";
 import { useOrganiser } from "@/context/organiser-context";
 
 export default function OrganiserProfilePage() {
@@ -20,7 +23,15 @@ export default function OrganiserProfilePage() {
   const [clubName, setClubName] = useState(profile.clubName);
   const [department, setDepartment] = useState(profile.department);
   const [isEditing, setIsEditing] = useState(false);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [showSavedToast, setShowSavedToast] = useState(false);
+
+  const initials = profile.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -87,23 +98,45 @@ export default function OrganiserProfilePage() {
         )}
 
         <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center gap-4 border-b border-border pb-6">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-white ring-4 ring-primary/10">
-              {profile.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2)
-                .toUpperCase()}
+          <div className="flex items-center gap-5 border-b border-border pb-6">
+            <div className="relative group shrink-0">
+              <div className="relative flex h-18 w-18 items-center justify-center rounded-full bg-primary text-xl font-bold text-white ring-4 ring-primary/10 overflow-hidden shadow-xs">
+                <UserAvatar
+                  src={profile.profileImage}
+                  alt={profile.name}
+                  fallback={initials}
+                  className="flex items-center justify-center text-xl font-bold text-white"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsPhotoModalOpen(true)}
+                className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-all group-hover:scale-110"
+                aria-label="Change organiser photo"
+                title="Change photo"
+              >
+                <Camera className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-text-primary">
-                {profile.name}
-              </h2>
+
+            <div className="flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <h2 className="text-lg font-bold text-text-primary">
+                  {profile.name}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setIsPhotoModalOpen(true)}
+                  className="text-xs font-semibold text-primary hover:underline self-start sm:self-auto"
+                >
+                  Change Photo
+                </button>
+              </div>
               <p className="text-xs text-text-secondary">{profile.clubName}</p>
               <div className="mt-1.5 inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/20">
                 <Shield className="h-3 w-3" />
-                Demo Campus Club Lead
+                <span>Verified Club Lead</span>
               </div>
             </div>
           </div>
@@ -223,6 +256,19 @@ export default function OrganiserProfilePage() {
             </button>
           </div>
         </div>
+
+        <ProfileImageModal
+          isOpen={isPhotoModalOpen}
+          onClose={() => setIsPhotoModalOpen(false)}
+          currentImage={profile.profileImage}
+          fallbackInitials={initials}
+          onSave={(newImage) => {
+            updateProfile({ profileImage: newImage });
+            setShowSavedToast(true);
+            setTimeout(() => setShowSavedToast(false), 3000);
+          }}
+          title="Update Organiser Photo"
+        />
       </div>
     </OrganiserLayout>
   );
