@@ -2,6 +2,7 @@
 
 import { Bell, Compass, Trash2 } from "lucide-react";
 import Link from "next/link";
+import EventBanner from "@/components/events/event-banner";
 import StudentLayout from "@/components/layout/student-layout";
 import { useStudent } from "@/context/student-context";
 import { DUMMY_EVENTS } from "@/data/events";
@@ -45,37 +46,45 @@ export default function MyRemindersPage() {
                   key={rem.id}
                   className="flex flex-col justify-between gap-4 rounded-xl border border-border bg-surface p-5 shadow-xs transition-shadow hover:shadow-md sm:flex-row sm:items-center"
                 >
-                  {/* Left: Reminder Details */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                        <Bell className="h-4 w-4" aria-hidden="true" />
-                      </div>
-                      <h3 className="text-base font-bold text-text-primary sm:text-lg">
-                        {event.title}
-                      </h3>
-                    </div>
+                  {/* Left: Thumbnail & Details */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <EventBanner
+                      event={event}
+                      className="relative h-20 w-full sm:w-28 shrink-0 rounded-lg"
+                      sizes="(max-width: 640px) 100vw, 112px"
+                    />
 
-                    <div className="space-y-1 pl-10 text-xs text-text-secondary sm:text-sm">
-                      <p className="font-medium text-text-primary">
-                        Remind me:{" "}
-                        <span className="font-semibold text-primary">
-                          {rem.remindTiming}
-                        </span>{" "}
-                        for{" "}
-                        <span className="font-semibold text-text-primary">
-                          {rem.remindTarget}
-                        </span>
-                        {rem.customDate && (
-                          <span className="ml-1 text-text-secondary">
-                            (on {rem.customDate} at {rem.customTime})
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                          <Bell className="h-3.5 w-3.5" aria-hidden="true" />
+                        </div>
+                        <h3 className="text-base font-bold text-text-primary sm:text-lg">
+                          {event.title}
+                        </h3>
+                      </div>
+
+                      <div className="space-y-1 pl-9 text-xs text-text-secondary sm:text-sm">
+                        <p className="font-medium text-text-primary">
+                          Remind me:{" "}
+                          <span className="font-semibold text-primary">
+                            {rem.remindTiming}
+                          </span>{" "}
+                          for{" "}
+                          <span className="font-semibold text-text-primary">
+                            {rem.remindTarget}
                           </span>
-                        )}
-                      </p>
-                      <p className="text-xs text-text-secondary">
-                        Event date: {event.date} ({event.startTime} -{" "}
-                        {event.endTime}) | Venue: {event.venue}
-                      </p>
+                          {rem.customDate && (
+                            <span className="ml-1 text-text-secondary">
+                              (on {rem.customDate} at {rem.customTime})
+                            </span>
+                          )}
+                        </p>
+                        <p className="text-xs text-text-secondary">
+                          Event date: {event.date} ({event.startTime} -{" "}
+                          {event.endTime}) | Venue: {event.venue}
+                        </p>
+                      </div>
                     </div>
                   </div>
 

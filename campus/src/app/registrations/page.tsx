@@ -2,6 +2,7 @@
 
 import { CalendarCheck, Compass, Info, Trash2 } from "lucide-react";
 import Link from "next/link";
+import EventBanner from "@/components/events/event-banner";
 import StudentLayout from "@/components/layout/student-layout";
 import { useStudent } from "@/context/student-context";
 import { DUMMY_EVENTS } from "@/data/events";
@@ -48,40 +49,50 @@ export default function MyRegistrationsPage() {
             {registeredEvents.map(({ reg, event }) => {
               if (!event) return null;
               const isMarked = reg.status === "Marked as registered";
+              const registrationLink =
+                event.registrationUrl || event.registrationLink;
 
               return (
                 <div
                   key={reg.eventId}
                   className="flex flex-col justify-between gap-4 rounded-xl border border-border bg-surface p-5 shadow-xs transition-shadow hover:shadow-md sm:flex-row sm:items-center"
                 >
-                  {/* Left: Event Details and Status */}
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      <h3 className="text-base font-bold text-text-primary sm:text-lg">
-                        {event.title}
-                      </h3>
-                      {/* Status badge matching Frame 09 */}
-                      <span
-                        className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${
-                          isMarked
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : "bg-surface-muted text-text-secondary border border-border"
-                        }`}
-                      >
-                        Status: {reg.status}
-                      </span>
-                    </div>
+                  {/* Left: Event Thumbnail & Details */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <EventBanner
+                      event={event}
+                      className="relative h-20 w-full sm:w-28 shrink-0 rounded-lg"
+                      sizes="(max-width: 640px) 100vw, 112px"
+                    />
 
-                    <p className="text-xs text-text-secondary sm:text-sm">
-                      {event.date} <span className="text-border">|</span>{" "}
-                      {event.venue} <span className="text-border">|</span>{" "}
-                      <span className="inline-flex items-center gap-1 text-primary break-all">
-                        <span>
-                          Registration link:{" "}
-                          {event.registrationLink.replace("https://", "")}
+                    <div className="space-y-1.5">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <h3 className="text-base font-bold text-text-primary sm:text-lg">
+                          {event.title}
+                        </h3>
+                        {/* Status badge matching Frame 09 */}
+                        <span
+                          className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${
+                            isMarked
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-surface-muted text-text-secondary border border-border"
+                          }`}
+                        >
+                          Status: {reg.status}
                         </span>
-                      </span>
-                    </p>
+                      </div>
+
+                      <p className="text-xs text-text-secondary sm:text-sm">
+                        {event.date} <span className="text-border">|</span>{" "}
+                        {event.venue} <span className="text-border">|</span>{" "}
+                        <span className="inline-flex items-center gap-1 text-primary break-all">
+                          <span>
+                            Registration link:{" "}
+                            {registrationLink.replace("https://", "")}
+                          </span>
+                        </span>
+                      </p>
+                    </div>
                   </div>
 
                   {/* Right Actions matching Frame 09: [ View Event Details ] */}

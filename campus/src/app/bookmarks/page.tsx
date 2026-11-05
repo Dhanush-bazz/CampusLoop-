@@ -2,6 +2,7 @@
 
 import { Bookmark, Compass, Trash2 } from "lucide-react";
 import Link from "next/link";
+import EventBanner from "@/components/events/event-banner";
 import StudentLayout from "@/components/layout/student-layout";
 import { useStudent } from "@/context/student-context";
 import { DUMMY_EVENTS } from "@/data/events";
@@ -39,10 +40,12 @@ export default function BookmarkedEventsPage() {
                 className="flex flex-col justify-between gap-4 rounded-xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:p-5 shadow-xs transition-shadow hover:shadow-md"
               >
                 {/* Left: Thumbnail and Info */}
-                <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-                  <div className="flex h-20 w-full sm:w-24 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-xs font-medium text-text-disabled">
-                    Image
-                  </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                  <EventBanner
+                    event={event}
+                    className="relative h-24 w-full sm:w-32 shrink-0 rounded-lg"
+                    sizes="(max-width: 640px) 100vw, 128px"
+                  />
 
                   <div className="space-y-1">
                     <h3 className="text-base font-bold text-text-primary sm:text-lg">
@@ -52,7 +55,7 @@ export default function BookmarkedEventsPage() {
                       {event.category} <span className="text-border">|</span>{" "}
                       {event.date} <span className="text-border">|</span>{" "}
                       {event.venue} <span className="text-border">|</span>{" "}
-                      {event.organiser}
+                      {event.organiser || event.organiserName}
                     </p>
                     <div className="flex items-center gap-2 pt-1 text-xs text-text-secondary">
                       <span>

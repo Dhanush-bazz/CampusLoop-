@@ -73,23 +73,12 @@ export default function Navbar() {
               >
                 {user.profileImage ? (
                   <div className="relative h-5 w-5 rounded-full overflow-hidden shrink-0 border border-white/30">
-                    {user.profileImage.startsWith("data:image/svg") ? (
-                      // biome-ignore lint/a11y/useAltText: user avatar
-                      <img
-                        src={user.profileImage}
-                        alt={user.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <Image
-                        src={user.profileImage}
-                        alt={user.name}
-                        fill
-                        sizes="20px"
-                        className="object-cover"
-                        unoptimized
-                      />
-                    )}
+                    <UserAvatar
+                      src={user.profileImage}
+                      alt={user.name}
+                      fallback={user.name[0]?.toUpperCase() || "U"}
+                      className="text-[10px] font-bold"
+                    />
                   </div>
                 ) : (
                   <User className="h-3.5 w-3.5 text-sky-400" />
@@ -182,23 +171,12 @@ export default function Navbar() {
                   >
                     {user.profileImage ? (
                       <div className="relative h-5 w-5 rounded-full overflow-hidden shrink-0 border border-white/30">
-                        {user.profileImage.startsWith("data:image/svg") ? (
-                          // biome-ignore lint/a11y/useAltText: user avatar
-                          <img
-                            src={user.profileImage}
-                            alt={user.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <Image
-                            src={user.profileImage}
-                            alt={user.name}
-                            fill
-                            sizes="20px"
-                            className="object-cover"
-                            unoptimized
-                          />
-                        )}
+                        <UserAvatar
+                          src={user.profileImage}
+                          alt={user.name}
+                          fallback={user.name[0]?.toUpperCase() || "U"}
+                          className="text-[10px] font-bold"
+                        />
                       </div>
                     ) : (
                       <User className="h-4 w-4 text-sky-400" />

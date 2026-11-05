@@ -4,16 +4,21 @@ import {
   AlertCircle,
   Bell,
   Bookmark,
+  Calendar,
   Check,
   ChevronLeft,
+  Clock,
   ExternalLink,
+  MapPin,
   X,
 } from "lucide-react";
 import Link from "next/link";
 import { Suspense, use, useState } from "react";
+import EventBanner from "@/components/events/event-banner";
 import StudentLayout from "@/components/layout/student-layout";
 import { useStudent } from "@/context/student-context";
 import { DUMMY_EVENTS } from "@/data/events";
+import { isValidHttpUrl } from "@/lib/urls";
 
 interface EventDetailPageProps {
   params: Promise<{ id: string }>;
@@ -51,7 +56,7 @@ function EventDetailInner({ params }: EventDetailPageProps) {
       <StudentLayout>
         <div className="mx-auto max-w-2xl py-16 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-surface-muted text-text-disabled">
-            <AlertCircle className="h-8 w-8" />
+            <AlertCircle className="h-8 w-8 text-rose-500" />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-text-primary">
             Event Not Found
@@ -63,7 +68,7 @@ function EventDetailInner({ params }: EventDetailPageProps) {
           <div className="mt-6">
             <Link
               href="/explore"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-hover"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-hover shadow-xs"
             >
               <ChevronLeft className="h-4 w-4" />
               <span>Back to Explore Events</span>
@@ -76,6 +81,8 @@ function EventDetailInner({ params }: EventDetailPageProps) {
 
   const saved = isBookmarked(event.id);
   const registered = isRegistered(event.id);
+  const organiserName = event.organiser || event.organiserName;
+  const registrationLink = event.registrationUrl || event.registrationLink;
 
   const handleSaveReminder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,13 +115,13 @@ function EventDetailInner({ params }: EventDetailPageProps) {
         {/* Reminder Success Notification */}
         {reminderSavedSuccess && (
           <output
-            className="flex items-center justify-between rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success"
+            className="flex items-center justify-between rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success shadow-xs animate-in fade-in"
             aria-live="polite"
           >
             <div className="flex items-center gap-2">
               <Check className="h-4 w-4 shrink-0" />
               <span>
-                Reminder set for <strong>{event.title}</strong>! Check My
+                Reminder set for <strong>{event.title}</strong>! View in My
                 Reminders.
               </span>
             </div>
@@ -129,12 +136,13 @@ function EventDetailInner({ params }: EventDetailPageProps) {
           </output>
         )}
 
-        {/* Event Banner Placeholder matching Frame 07 */}
-        <div className="relative flex h-64 sm:h-72 w-full items-center justify-center rounded-2xl border border-border bg-surface-muted text-text-disabled shadow-xs overflow-hidden">
-          <span className="text-base font-semibold text-text-secondary">
-            Event banner placeholder
-          </span>
-        </div>
+        {/* Event High-Resolution Banner */}
+        <EventBanner
+          event={event}
+          className="relative h-64 sm:h-80 md:h-96 w-full rounded-2xl border border-border shadow-sm"
+          showCategoryBadge={true}
+          priority={true}
+        />
 
         {/* Title and Organizer Header matching Frame 07 */}
         <div className="space-y-1">
@@ -144,7 +152,7 @@ function EventDetailInner({ params }: EventDetailPageProps) {
           <p className="text-base text-text-secondary">
             {event.category} <span className="text-border">|</span> Organised by{" "}
             <span className="font-semibold text-text-primary">
-              {event.organiser}
+              {organiserName}
             </span>
           </p>
         </div>
@@ -175,21 +183,20 @@ function EventDetailInner({ params }: EventDetailPageProps) {
           <div className="space-y-4">
             <div className="rounded-2xl border border-border bg-surface-muted p-6 space-y-4 shadow-xs">
               <div className="space-y-3 text-sm">
-                <div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-primary shrink-0" />
                   <span className="font-bold text-text-primary">Date:</span>{" "}
                   <span className="text-text-secondary">{event.date}</span>
                 </div>
-                <div>
-                  <span className="font-bold text-text-primary">
-                    Start time:
-                  </span>{" "}
-                  <span className="text-text-secondary">{event.startTime}</span>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-primary shrink-0" />
+                  <span className="font-bold text-text-primary">Time:</span>{" "}
+                  <span className="text-text-secondary">
+                    {event.startTime} - {event.endTime}
+                  </span>
                 </div>
-                <div>
-                  <span className="font-bold text-text-primary">End time:</span>{" "}
-                  <span className="text-text-secondary">{event.endTime}</span>
-                </div>
-                <div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-primary shrink-0" />
                   <span className="font-bold text-text-primary">Venue:</span>{" "}
                   <span className="text-text-secondary">{event.venue}</span>
                 </div>
@@ -213,18 +220,28 @@ function EventDetailInner({ params }: EventDetailPageProps) {
 
               {/* Register Now button matching Frame 07 */}
               <div className="space-y-2 pt-2 border-t border-border">
-                <a
-                  href={event.registrationLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-hover shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                >
-                  <span>Register Now</span>
-                  <span className="text-xs font-normal text-white/80">
-                    (opens external site)
-                  </span>
-                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                </a>
+                {isValidHttpUrl(registrationLink) ? (
+                  <a
+                    href={registrationLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-hover shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    <span>Register Now</span>
+                    <span className="text-xs font-normal text-white/80">
+                      (external link)
+                    </span>
+                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="inline-flex w-full h-12 items-center justify-center gap-2 rounded-xl bg-surface-muted border border-border px-4 text-sm font-semibold text-text-disabled cursor-not-allowed"
+                  >
+                    <span>Registration Link Unavailable</span>
+                  </button>
+                )}
 
                 {/* Mark as registered toggle */}
                 <button
@@ -236,7 +253,7 @@ function EventDetailInner({ params }: EventDetailPageProps) {
                       markAsRegistered(event.id);
                     }
                   }}
-                  className={`w-full py-2 text-xs font-medium rounded-lg border transition-colors ${
+                  className={`w-full py-2.5 text-xs font-semibold rounded-xl border transition-colors ${
                     registered
                       ? "border-success bg-success/10 text-success"
                       : "border-border bg-surface text-text-secondary hover:bg-surface-muted"
