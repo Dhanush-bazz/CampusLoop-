@@ -2,6 +2,7 @@
 
 import { Bookmark, Calendar, Clock, MapPin, Tag } from "lucide-react";
 import Link from "next/link";
+import EventBanner from "@/components/events/event-banner";
 import { useBookmarks } from "@/context/bookmark-context";
 import type { Event } from "@/data/events";
 
@@ -19,16 +20,19 @@ export default function StudentEventCard({
 
   if (variant === "explore") {
     return (
-      <article className="flex w-full flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-xs transition-shadow hover:shadow-md">
-        {/* Event Image / Placeholder Area */}
-        <div className="flex h-44 w-full items-center justify-center bg-surface-muted text-text-disabled">
-          <span className="text-sm font-medium">Event image</span>
-        </div>
+      <article className="group flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+        {/* Event Banner with Category Badge */}
+        <EventBanner
+          event={event}
+          className="relative h-44 w-full"
+          showCategoryBadge={true}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
 
         {/* Content Section */}
         <div className="flex flex-1 flex-col p-5">
           <div className="flex-1 space-y-2">
-            <h3 className="line-clamp-1 text-lg font-bold text-text-primary">
+            <h3 className="line-clamp-1 text-lg font-bold text-text-primary group-hover:text-primary transition-colors">
               {event.title}
             </h3>
 
@@ -56,12 +60,12 @@ export default function StudentEventCard({
                   className="h-4 w-4 shrink-0 text-text-secondary"
                   aria-hidden="true"
                 />
-                <span>{event.venue}</span>
+                <span className="line-clamp-1">{event.venue}</span>
               </div>
               <p className="text-xs text-text-secondary">
                 Organised by{" "}
                 <span className="font-medium text-text-primary">
-                  {event.organiser}
+                  {event.organiser || event.organiserName}
                 </span>
               </p>
             </div>
@@ -92,7 +96,7 @@ export default function StudentEventCard({
 
             <Link
               href={`/events/${event.id}`}
-              className="inline-flex flex-1 items-center justify-center rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="inline-flex flex-1 items-center justify-center rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus text-center"
             >
               View Details
             </Link>
@@ -104,17 +108,24 @@ export default function StudentEventCard({
 
   // Dashboard variant matching Frame 05
   return (
-    <article className="flex w-full flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-xs transition-shadow hover:shadow-md">
-      {/* Banner Image with Bookmark on top-right */}
-      <div className="relative flex h-36 w-full items-center justify-center bg-surface-muted text-text-disabled">
-        <span className="text-sm font-medium">Banner image</span>
+    <article className="group flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+      {/* Banner Image with Bookmark button on top-right */}
+      <EventBanner
+        event={event}
+        className="relative h-40 w-full"
+        showCategoryBadge={true}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      >
         <button
           type="button"
-          onClick={() => toggleBookmark(event.id)}
-          className={`absolute top-3 right-3 inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${
+          onClick={(e) => {
+            e.preventDefault();
+            toggleBookmark(event.id);
+          }}
+          className={`pointer-events-auto absolute top-3 right-3 inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${
             saved
               ? "bg-primary text-white hover:bg-primary-hover"
-              : "border border-border bg-surface text-text-primary hover:bg-surface-muted"
+              : "border border-border/80 bg-surface/90 backdrop-blur-xs text-text-primary hover:bg-surface"
           }`}
           aria-label={
             saved
@@ -128,17 +139,17 @@ export default function StudentEventCard({
           />
           <span>{saved ? "Saved" : "Save"}</span>
         </button>
-      </div>
+      </EventBanner>
 
       {/* Info Section matching Frame 05 content */}
-      <div className="flex flex-1 flex-col justify-between p-5">
+      <div className="flex flex-1 flex-col justify-between p-5 space-y-4">
         <div className="space-y-1.5">
-          <h3 className="line-clamp-1 text-base font-bold text-text-primary">
+          <h3 className="line-clamp-1 text-base font-bold text-text-primary group-hover:text-primary transition-colors">
             {event.title}
           </h3>
           <p className="text-xs text-text-secondary">
             {event.category} <span className="text-border">|</span> by{" "}
-            {event.organiser}
+            {event.organiser || event.organiserName}
           </p>
           <div className="flex items-center gap-1 text-xs text-text-secondary">
             <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
@@ -153,10 +164,10 @@ export default function StudentEventCard({
           </div>
         </div>
 
-        <div className="mt-4 pt-2">
+        <div className="pt-2 border-t border-border/60">
           <Link
             href={`/events/${event.id}`}
-            className="inline-flex min-h-9 items-center justify-center rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            className="inline-flex min-h-9 w-full items-center justify-center rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             View Details
           </Link>
