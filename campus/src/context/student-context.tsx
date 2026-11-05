@@ -13,13 +13,7 @@ import {
   OrganiserContext,
   type OrganiserEvent,
 } from "@/context/organiser-context";
-import {
-  DUMMY_EVENTS,
-  EVENT_CATEGORIES,
-  type Event,
-  type EventCategory,
-  getEventDateTimestamp,
-} from "@/data/events";
+import { type Event, INITIAL_EVENTS, normalizeEvent } from "@/data/events";
 import { authService } from "@/lib/auth/auth-service";
 import { readStoredJSON, writeStoredJSON } from "@/lib/storage";
 
@@ -68,7 +62,7 @@ interface StudentContextType {
   addReminder: (reminder: Omit<ReminderItem, "id" | "createdAt">) => void;
   removeReminder: (id: string) => void;
 
-  // Unified Events (Static + Approved Organiser Submissions)
+  // Unified Events (Single source of truth: Approved events)
   allEvents: Event[];
   getEventById: (id: string) => Event | undefined;
 }
@@ -136,7 +130,7 @@ function isReminderArray(value: unknown): value is ReminderItem[] {
 const DEFAULT_PROFILE: StudentProfile = {
   fullName: "Priya Sharma",
   email: "priya@college.edu",
-  collegeName: "City Engineering College",
+  collegeName: "Sahyadri College of Engineering & Management",
 };
 
 // Frame 08 specifies "3 saved events"
@@ -170,95 +164,38 @@ const INITIAL_REMINDERS: ReminderItem[] = [
   },
 ];
 
-function mapOrganiserEventToEvent(org: OrganiserEvent): Event {
-  const matchedCategory = EVENT_CATEGORIES.find(
-    (c) => c.toLowerCase() === org.category.toLowerCase(),
-  );
-
-  return {
-    id: org.id,
-    title: org.title,
-    category: (matchedCategory || "Workshop") as EventCategory,
-    date: org.date,
-    startTime: org.startTime,
-    endTime: org.endTime,
-    venue: org.venue,
-    organiser: org.organiserName,
-    description: org.description,
-    registrationDeadline: org.registrationDeadline,
-    registrationLink: org.registrationUrl,
-    image: org.bannerUrl,
-    featured: false,
-  };
-}
-
-/**
- * Deduplication rules:
- * 1. An event is primarily identified by its unique ID.
- * 2. To prevent duplicated cards between baseline static events (DUMMY_EVENTS)
- *    and approved organiser submissions that represent the same campus event:
- *    - Compare normalized title, date, and venue.
- *    - Approved organiser events take precedence as they contain dynamic moderation metadata.
- * 3. Legitimate recurring events (different dates or different venues) produce
- *    distinct signatures and are strictly preserved.
- */
-function normalizeText(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]/g, "");
-}
-
-function isDuplicateBaselineEvent(
-  base: Event,
-  approvedOrgEvents: Event[],
-): boolean {
-  for (const org of approvedOrgEvents) {
-    if (org.id === base.id) return true;
-
-    const baseDate = getEventDateTimestamp(base.date);
-    const orgDate = getEventDateTimestamp(org.date);
-
-    if (baseDate && orgDate && baseDate === orgDate) {
-      const normBaseVenue = normalizeText(base.venue);
-      const normOrgVenue = normalizeText(org.venue);
-      if (normBaseVenue === normOrgVenue) {
-        const normBaseTitle = normalizeText(base.title);
-        const normOrgTitle = normalizeText(org.title);
-        if (
-          normBaseTitle === normOrgTitle ||
-          (normBaseTitle.includes("aiml") &&
-            normOrgTitle.includes("aimachinelearning")) ||
-          (normBaseTitle.includes("ai") &&
-            normOrgTitle.includes("ai") &&
-            normBaseTitle.includes("workshop") &&
-            normOrgTitle.includes("workshop"))
-        ) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-}
-
 export function StudentProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const organiserCtx = useContext(OrganiserContext);
-  const organiserEvents = organiserCtx?.events ?? [];
+  const organiserEvents = organiserCtx?.events;
 
+  // Single source of truth for approved events discoverable by students
   const allEvents = useMemo(() => {
-    const approvedOrgEvents = organiserEvents
+    const sourceList: OrganiserEvent[] =
+      organiserEvents && organiserEvents.length > 0
+        ? organiserEvents
+        : INITIAL_EVENTS;
+
+    return sourceList
       .filter((e) => e.approvalStatus === "Approved")
-      .map(mapOrganiserEventToEvent);
-
-    const baseEvents = DUMMY_EVENTS.filter(
-      (base) => !isDuplicateBaselineEvent(base, approvedOrgEvents),
-    );
-
-    return [...baseEvents, ...approvedOrgEvents];
+      .map((e) => normalizeEvent(e));
   }, [organiserEvents]);
 
   const getEventById = (id: string): Event | undefined => {
-    return allEvents.find((e) => e.id === id);
+    // First search in approved student events
+    const approved = allEvents.find((e) => e.id === id);
+    if (approved) return approved;
+
+    // Fallback to organiser source in case an event is being reviewed or registered
+    const inSource = organiserEvents?.find((e) => e.id === id);
+    if (inSource) return normalizeEvent(inSource);
+
+    const inInitial = INITIAL_EVENTS.find((e) => e.id === id);
+    if (inInitial) return normalizeEvent(inInitial);
+
+    return undefined;
   };
+
   const [profile, setProfile] = useState<StudentProfile>(DEFAULT_PROFILE);
 
   // Sync profile when authenticated student changes
@@ -273,6 +210,7 @@ export function StudentProvider({ children }: { children: ReactNode }) {
       }));
     }
   }, [user]);
+
   const [bookmarkedIds, setBookmarkedIds] =
     useState<string[]>(INITIAL_BOOKMARKS);
   const [registrations, setRegistrations] = useState<RegistrationItem[]>(
