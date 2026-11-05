@@ -10,16 +10,21 @@ import {
   UploadCloud,
   XCircle,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, Suspense, use, useState } from "react";
+import EventBanner from "@/components/events/event-banner";
 import OrganiserLayout from "@/components/layout/organiser-layout";
 import {
   type EventApprovalStatus,
   useOrganiser,
 } from "@/context/organiser-context";
-import { EVENT_CATEGORIES } from "@/data/events";
+import {
+  EVENT_CATEGORIES,
+  type EventCategory,
+  getFallbackBanner,
+} from "@/data/events";
+import { fileToOptimizedDataUrl } from "@/lib/image-upload";
 import { isValidHttpUrl } from "@/lib/urls";
 
 interface EditEventPageProps {
@@ -35,17 +40,25 @@ function EditEventInner({ params }: EditEventPageProps) {
 
   const [title, setTitle] = useState(event?.title ?? "");
   const [description, setDescription] = useState(event?.description ?? "");
-  const [category, setCategory] = useState(event?.category ?? "Hackathon");
+  const [category, setCategory] = useState<EventCategory>(
+    (event?.category as EventCategory) ?? "Hackathon",
+  );
   const [date, setDate] = useState(event?.date ?? "");
   const [startTime, setStartTime] = useState(event?.startTime ?? "09:00");
   const [endTime, setEndTime] = useState(event?.endTime ?? "21:00");
   const [venue, setVenue] = useState(event?.venue ?? "");
   const [deadline, setDeadline] = useState(event?.registrationDeadline ?? "");
   const [registrationUrl, setRegistrationUrl] = useState(
-    event?.registrationUrl ?? "",
+    event?.registrationUrl || event?.registrationLink || "",
   );
-  const [bannerUrl, setBannerUrl] = useState(event?.bannerUrl ?? "");
-  const [clubName, setClubName] = useState(event?.organiserName ?? "");
+  const [bannerUrl, setBannerUrl] = useState(
+    event?.bannerUrl ||
+      event?.image ||
+      getFallbackBanner(event?.id, event?.category),
+  );
+  const [clubName, setClubName] = useState(
+    event?.organiserName || event?.organiser || "",
+  );
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
@@ -66,7 +79,7 @@ function EditEventInner({ params }: EditEventPageProps) {
           <div className="mt-6">
             <Link
               href="/organiser/dashboard"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white shadow-xs"
             >
               <ArrowLeft className="h-4 w-4" />
               Return to Dashboard
@@ -76,6 +89,22 @@ function EditEventInner({ params }: EditEventPageProps) {
       </OrganiserLayout>
     );
   }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const dataUrl = await fileToOptimizedDataUrl(file);
+      setBannerUrl(dataUrl);
+    } catch (err) {
+      console.error("Failed to process banner image:", err);
+      setErrors((prev) => [
+        ...prev,
+        "Failed to load image. Please select a JPG or PNG file under 5MB.",
+      ]);
+    }
+  };
 
   const validate = (): boolean => {
     const errs: string[] = [];
@@ -105,6 +134,9 @@ function EditEventInner({ params }: EditEventPageProps) {
     e.preventDefault();
     if (!validate()) return;
 
+    const newStatus: EventApprovalStatus =
+      event.approvalStatus === "Draft" ? "Pending" : "Pending";
+
     updateEvent(event.id, {
       title,
       description,
@@ -115,9 +147,12 @@ function EditEventInner({ params }: EditEventPageProps) {
       venue,
       registrationDeadline: deadline,
       registrationUrl,
+      registrationLink: registrationUrl,
       bannerUrl,
+      image: bannerUrl,
       organiserName: clubName,
-      approvalStatus: "Pending",
+      organiser: clubName,
+      approvalStatus: newStatus,
       adminFeedback: undefined,
     });
 
@@ -185,19 +220,19 @@ function EditEventInner({ params }: EditEventPageProps) {
           <div>{getStatusBadge(event.approvalStatus)}</div>
         </div>
 
-        {/* Frame 15 Alert Banner (#fff5ed fill / #9b4a08 text) */}
+        {/* Frame 15 Alert Banner */}
         {event.approvalStatus === "Approved" && (
           <div className="flex items-center gap-3 rounded-xl border border-amber-300 bg-[#fff5ed] p-4 text-xs font-medium text-[#9b4a08] shadow-xs">
             <AlertTriangle className="h-4 w-4 shrink-0 text-[#9b4a08]" />
             <span>
-              This event is approved. Changes may require admin review before
-              the event is republished.
+              This event is approved. Changes will submit it for admin
+              re-approval before being republished to students.
             </span>
           </div>
         )}
 
         {isSaved && (
-          <div className="flex items-center gap-2 rounded-xl border border-[#067429] bg-[#eaf9ef] p-4 text-xs font-bold text-[#067429]">
+          <div className="flex items-center gap-2 rounded-xl border border-[#067429] bg-[#eaf9ef] p-4 text-xs font-bold text-[#067429] shadow-xs animate-in fade-in">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>Event changes saved successfully! Redirecting...</span>
           </div>
@@ -271,9 +306,6 @@ function EditEventInner({ params }: EditEventPageProps) {
                   }}
                   className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
                 >
-                  {!EVENT_CATEGORIES.some((item) => item === category) && (
-                    <option value={category}>{category}</option>
-                  )}
                   {EVENT_CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
@@ -395,16 +427,14 @@ function EditEventInner({ params }: EditEventPageProps) {
                   Current event banner
                 </span>
                 <div className="overflow-hidden rounded-xl border border-border">
-                  <Image
+                  <EventBanner
                     src={bannerUrl}
                     alt={title}
-                    width={800}
-                    height={300}
-                    unoptimized
-                    className="h-44 w-full object-cover"
+                    className="h-44 w-full"
+                    showGradient={false}
                   />
                 </div>
-                <div className="relative flex items-center justify-center rounded-lg border border-border bg-surface-muted py-2.5 hover:bg-border transition-colors">
+                <div className="relative flex items-center justify-center rounded-lg border border-border bg-surface-muted py-2.5 hover:bg-border transition-colors cursor-pointer">
                   <UploadCloud className="h-4 w-4 text-text-secondary mr-2" />
                   <span className="text-xs font-semibold text-text-primary">
                     [ Replace image ]
@@ -413,11 +443,7 @@ function EditEventInner({ params }: EditEventPageProps) {
                     type="file"
                     accept="image/*"
                     className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => {
-                      if (e.target.files?.[0]) {
-                        setBannerUrl(URL.createObjectURL(e.target.files[0]));
-                      }
-                    }}
+                    onChange={handleFileUpload}
                   />
                 </div>
               </div>

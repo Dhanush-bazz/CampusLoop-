@@ -8,14 +8,19 @@ import {
   UploadCloud,
   X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
+import EventBanner from "@/components/events/event-banner";
 import OrganiserLayout from "@/components/layout/organiser-layout";
 import { useAuth } from "@/context/auth-context";
 import { useOrganiser } from "@/context/organiser-context";
-import { EVENT_CATEGORIES, type EventCategory } from "@/data/events";
+import {
+  EVENT_CATEGORIES,
+  type EventCategory,
+  getFallbackBanner,
+} from "@/data/events";
+import { fileToOptimizedDataUrl } from "@/lib/image-upload";
 import { isValidHttpUrl } from "@/lib/urls";
 
 export default function CreateEventPage() {
@@ -33,8 +38,9 @@ export default function CreateEventPage() {
   const [deadline, setDeadline] = useState("");
   const [registrationUrl, setRegistrationUrl] = useState("");
   const [bannerUrl, setBannerUrl] = useState(
-    "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+    getFallbackBanner(undefined, "Hackathon"),
   );
+  const [isCustomBanner, setIsCustomBanner] = useState(false);
   const [clubName, setClubName] = useState(
     profile.clubName || "IEEE Student Branch",
   );
@@ -43,6 +49,30 @@ export default function CreateEventPage() {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDraftSaving, setIsDraftSaving] = useState(false);
+
+  const handleCategoryChange = (newCat: EventCategory) => {
+    setCategory(newCat);
+    if (!isCustomBanner) {
+      setBannerUrl(getFallbackBanner(undefined, newCat));
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const dataUrl = await fileToOptimizedDataUrl(file);
+      setBannerUrl(dataUrl);
+      setIsCustomBanner(true);
+    } catch (err) {
+      console.error("Failed to process banner image:", err);
+      setErrors((prev) => [
+        ...prev,
+        "Failed to load image. Please select a JPG or PNG file under 5MB.",
+      ]);
+    }
+  };
 
   const validate = (): boolean => {
     const errs: string[] = [];
@@ -88,8 +118,7 @@ export default function CreateEventPage() {
 
     setIsSubmitting(true);
 
-    const activeEmail =
-      user?.email || profile.email || "organiser@campusloop.com";
+    const activeEmail = user?.email || profile.email || "organiser@college.edu";
     const activeName = clubName || profile.clubName || "Campus Club";
 
     const newEvent = createEvent(
@@ -103,9 +132,12 @@ export default function CreateEventPage() {
         venue: venue || "TBD",
         registrationDeadline:
           deadline || date || new Date().toISOString().split("T")[0],
-        registrationUrl,
-        bannerUrl,
+        registrationUrl: registrationUrl || "https://forms.example/event",
+        registrationLink: registrationUrl || "https://forms.example/event",
+        bannerUrl: bannerUrl || getFallbackBanner(undefined, category),
+        image: bannerUrl || getFallbackBanner(undefined, category),
         organiserName: activeName,
+        organiser: activeName,
         organiserEmail: activeEmail,
       },
       isDraft,
@@ -180,7 +212,7 @@ export default function CreateEventPage() {
           </output>
         )}
 
-        {/* Error Validation Banner (matching System States in SVG #fff0f0) */}
+        {/* Error Validation Banner */}
         {errors.length > 0 && (
           <div
             role="alert"
@@ -260,7 +292,8 @@ export default function CreateEventPage() {
                     const selectedCategory = EVENT_CATEGORIES.find(
                       (item) => item === e.target.value,
                     );
-                    if (selectedCategory) setCategory(selectedCategory);
+                    if (selectedCategory)
+                      handleCategoryChange(selectedCategory);
                   }}
                   className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-focus focus:outline-none focus:ring-1 focus:ring-focus"
                 >
@@ -396,52 +429,65 @@ export default function CreateEventPage() {
 
             {/* Right Column: Media & Organiser (5 cols) */}
             <div className="lg:col-span-5 space-y-4">
-              {/* 10. Event Banner Upload (matches Frame 14 SVG drag & drop box) */}
+              {/* 10. Event Banner Upload with Data URL persistent storage */}
               <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm space-y-3">
                 <label
                   htmlFor="banner-upload"
                   className="block text-xs font-semibold text-text-primary"
                 >
-                  10. Event Banner Upload
+                  10. Event Banner Image
                 </label>
 
                 <div className="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-surface-muted/50 p-6 text-center hover:bg-surface-muted transition-colors">
                   <UploadCloud className="h-10 w-10 text-text-tertiary mb-2" />
                   <p className="text-xs font-semibold text-text-primary">
-                    Drag an image here or{" "}
+                    Upload custom banner or{" "}
                     <span className="text-primary underline cursor-pointer">
                       Browse
                     </span>
                   </p>
                   <p className="mt-1 text-xs text-text-tertiary">
-                    JPG / PNG, max 5 MB
+                    JPG / PNG / WEBP, automatically optimized
                   </p>
                   <input
                     id="banner-upload"
                     type="file"
                     accept="image/png, image/jpeg, image/webp"
                     className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => {
-                      if (e.target.files?.[0]) {
-                        // Demo preview banner
-                        setBannerUrl(URL.createObjectURL(e.target.files[0]));
-                      }
-                    }}
+                    onChange={handleFileUpload}
                   />
                 </div>
 
                 {bannerUrl && (
-                  <div className="rounded-lg border border-border overflow-hidden">
-                    <Image
-                      src={bannerUrl}
-                      alt="Banner Preview"
-                      width={600}
-                      height={200}
-                      unoptimized
-                      className="h-36 w-full object-cover"
-                    />
-                    <div className="bg-surface p-2 text-center text-xs text-text-tertiary">
-                      Banner Preview
+                  <div className="space-y-1.5">
+                    <div className="overflow-hidden rounded-xl border border-border">
+                      <EventBanner
+                        src={bannerUrl}
+                        alt="Banner Preview"
+                        className="h-36 w-full"
+                        showGradient={false}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-text-tertiary px-1">
+                      <span>
+                        {isCustomBanner
+                          ? "Custom uploaded banner"
+                          : `Category banner (${category})`}
+                      </span>
+                      {isCustomBanner && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsCustomBanner(false);
+                            setBannerUrl(
+                              getFallbackBanner(undefined, category),
+                            );
+                          }}
+                          className="text-primary hover:underline"
+                        >
+                          Reset to default
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}

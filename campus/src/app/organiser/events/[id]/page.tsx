@@ -10,15 +10,14 @@ import {
   ExternalLink,
   FileEdit,
   MapPin,
-  Tag,
   Trash2,
   Users,
   XCircle,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, use, useState } from "react";
+import EventBanner from "@/components/events/event-banner";
 import OrganiserLayout from "@/components/layout/organiser-layout";
 import { useOrganiser } from "@/context/organiser-context";
 import { isValidHttpUrl } from "@/lib/urls";
@@ -51,7 +50,7 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
           <div className="mt-6">
             <Link
               href="/organiser/dashboard"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white shadow-xs"
             >
               <ArrowLeft className="h-4 w-4" />
               Return to Dashboard
@@ -66,6 +65,9 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
     deleteEvent(event.id);
     router.push("/organiser/dashboard");
   };
+
+  const registrationUrl = event.registrationUrl || event.registrationLink;
+  const organiserName = event.organiserName || event.organiser;
 
   return (
     <OrganiserLayout>
@@ -87,22 +89,12 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
           <div className="lg:col-span-7 space-y-6">
             {/* Event Banner */}
             <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
-              <div className="relative aspect-video w-full bg-[#e7e7e7]">
-                <Image
-                  src={event.bannerUrl}
-                  alt={event.title}
-                  width={1200}
-                  height={675}
-                  unoptimized
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute top-3 left-3">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-black/70 backdrop-blur-xs px-3 py-1 text-xs font-semibold text-white">
-                    <Tag className="h-3 w-3" />
-                    {event.category}
-                  </span>
-                </div>
-              </div>
+              <EventBanner
+                event={event}
+                className="relative aspect-video w-full"
+                showCategoryBadge={true}
+                priority={true}
+              />
 
               {/* Event Metadata Card (matching Frame 16 rect #f7f7f7) */}
               <div className="p-6 bg-[#f7f7f7] border-t border-border space-y-4">
@@ -111,7 +103,7 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
                     {event.title}
                   </h1>
                   <p className="mt-1 text-sm font-medium text-text-secondary">
-                    {event.category} &nbsp;|&nbsp; {event.organiserName}
+                    {event.category} &nbsp;|&nbsp; {organiserName}
                   </p>
                 </div>
 
@@ -143,14 +135,14 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
                     <ExternalLink className="h-4 w-4 text-text-tertiary shrink-0" />
                     <span>
                       <strong>Registration link:</strong>{" "}
-                      {isValidHttpUrl(event.registrationUrl) ? (
+                      {isValidHttpUrl(registrationUrl) ? (
                         <a
-                          href={event.registrationUrl}
+                          href={registrationUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-primary font-medium hover:underline break-all"
                         >
-                          {event.registrationUrl}
+                          {registrationUrl}
                         </a>
                       ) : (
                         <span className="text-text-secondary">
@@ -182,7 +174,7 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
           {/* Right Column: Approval Status & Action Controls (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm space-y-4">
-              <h2 className="text-sm font-bold text-text-primary uppercase tracking-wider text-text-secondary">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-text-secondary">
                 Approval Status
               </h2>
 
@@ -233,11 +225,11 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
                     <span>Rejected:</span>
                   </div>
                   <p className="text-xs leading-relaxed">
-                    Your event was rejected. Review the admin feedback and make
-                    the required changes.
+                    Your event proposal was rejected. Review the admin feedback
+                    below, update the required fields, and re-submit.
                   </p>
                   {event.adminFeedback && (
-                    <div className="rounded-lg bg-white/70 border border-rose-200 p-3 text-xs">
+                    <div className="rounded-lg bg-white/80 border border-rose-200 p-3 text-xs">
                       <strong className="block font-semibold mb-1 text-rose-950">
                         Admin feedback:
                       </strong>
@@ -300,7 +292,7 @@ function OrganiserEventDetailInner({ params }: OrganiserEventDetailPageProps) {
                 <button
                   type="button"
                   onClick={handleDelete}
-                  className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-700"
+                  className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-700 shadow-xs"
                 >
                   Delete Event
                 </button>
