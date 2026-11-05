@@ -32,7 +32,7 @@ export interface Event {
   registrationDeadline: string; // e.g. "2026-11-10"
   registrationLink: string;
   registrationUrl: string; // alias for registrationLink
-  image: string; // banner image URL or Data URL
+  image: string; // authoritative banner image URL or Data URL
   bannerUrl: string; // alias for image
   approvalStatus: EventApprovalStatus;
   submissionDate: string;
@@ -43,58 +43,42 @@ export interface Event {
 
 export type OrganiserEvent = Event;
 
-export const EVENT_IMAGE_MAP: Record<string, string> = {
-  "ai-ml-workshop":
-    "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=1200&q=80",
-  "code-sprint-hackathon":
-    "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
-  "inter-college-debate":
-    "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80",
-  "photography-walk":
-    "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=1200&q=80",
-  "cultural-night":
-    "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80",
-  "robotics-expo":
-    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80",
-  "open-mic-night":
-    "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
-  "web-dev-bootcamp":
-    "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
-  "annual-music-fest":
-    "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80",
-  "design-thinking-masterclass":
-    "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1200&q=80",
-  "cybersecurity-ctf-challenge":
-    "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80",
-  "quiz-bowl-championship":
-    "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80",
-  "startup-pitch-day":
-    "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80",
-  "late-night-gaming":
-    "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+export const LOCAL_EVENT_BANNERS: Record<string, string> = {
+  "ai-ml-workshop": "/images/events/ai-ml-workshop.jpg",
+  "code-sprint-hackathon": "/images/events/code-sprint-hackathon.jpg",
+  "inter-college-debate": "/images/events/inter-college-debate.jpg",
+  "photography-walk": "/images/events/photography-walk.jpg",
+  "cultural-night": "/images/events/cultural-night.jpg",
+  "robotics-expo": "/images/events/robotics-expo.jpg",
+  "open-mic-night": "/images/events/open-mic-night.jpg",
+  "web-dev-bootcamp": "/images/events/web-dev-bootcamp.jpg",
+  "annual-music-fest": "/images/events/annual-music-fest.jpg",
+  "design-thinking-masterclass": "/images/events/design-thinking.jpg",
+  "cybersecurity-ctf-challenge": "/images/events/cybersecurity-ctf.jpg",
+  "quiz-bowl-championship": "/images/events/quiz-bowl.jpg",
+  "startup-pitch-day": "/images/events/startup-pitch-day.jpg",
+  "late-night-gaming": "/images/events/late-night-gaming.jpg",
 };
 
-export const CATEGORY_FALLBACK_IMAGES: Record<EventCategory, string> = {
-  Workshop:
-    "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80",
-  Hackathon:
-    "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
-  Competition:
-    "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80",
-  "Cultural Event":
-    "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80",
-  "Technical Event":
-    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80",
-  "Club Activity":
-    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
+export const LOCAL_CATEGORY_BANNERS: Record<EventCategory, string> = {
+  Workshop: "/images/events/workshop-default.jpg",
+  Hackathon: "/images/events/hackathon-default.jpg",
+  Competition: "/images/events/competition-default.jpg",
+  "Cultural Event": "/images/events/cultural-default.jpg",
+  "Technical Event": "/images/events/technical-default.jpg",
+  "Club Activity": "/images/events/club-default.jpg",
 };
+
+export const EVENT_IMAGE_MAP: Record<string, string> = LOCAL_EVENT_BANNERS;
+export const CATEGORY_FALLBACK_IMAGES: Record<EventCategory, string> =
+  LOCAL_CATEGORY_BANNERS;
 
 export function getFallbackBanner(id?: string, category?: string): string {
-  if (id && EVENT_IMAGE_MAP[id]) return EVENT_IMAGE_MAP[id];
-  if (category && CATEGORY_FALLBACK_IMAGES[category as EventCategory]) {
-    return CATEGORY_FALLBACK_IMAGES[category as EventCategory];
+  if (id && LOCAL_EVENT_BANNERS[id]) return LOCAL_EVENT_BANNERS[id];
+  if (category && LOCAL_CATEGORY_BANNERS[category as EventCategory]) {
+    return LOCAL_CATEGORY_BANNERS[category as EventCategory];
   }
-  return CATEGORY_FALLBACK_IMAGES.Workshop;
+  return LOCAL_CATEGORY_BANNERS.Workshop;
 }
 
 export function resolveEventBanner(event: {
@@ -103,19 +87,31 @@ export function resolveEventBanner(event: {
   image?: string;
   bannerUrl?: string;
 }): string {
+  // 1. Authoritative local banner for known predefined events
+  if (event.id && LOCAL_EVENT_BANNERS[event.id]) {
+    return LOCAL_EVENT_BANNERS[event.id];
+  }
+
+  // 2. Custom organiser-uploaded base64 Data URL
   const custom = event.bannerUrl || event.image;
-  if (
-    custom &&
-    custom !== "/file.svg" &&
-    custom.trim() !== "" &&
-    (custom.startsWith("data:") ||
-      custom.startsWith("http://") ||
-      custom.startsWith("https://") ||
-      custom.startsWith("/"))
-  ) {
+  if (custom?.startsWith("data:image/")) {
     return custom;
   }
-  return getFallbackBanner(event.id, event.category);
+
+  // 3. Valid local path in /images/
+  if (custom?.startsWith("/images/")) {
+    return custom;
+  }
+
+  // 4. Category local banner fallback
+  if (
+    event.category &&
+    LOCAL_CATEGORY_BANNERS[event.category as EventCategory]
+  ) {
+    return LOCAL_CATEGORY_BANNERS[event.category as EventCategory];
+  }
+
+  return LOCAL_CATEGORY_BANNERS.Workshop;
 }
 
 export function normalizeEvent(
@@ -275,7 +271,7 @@ export const INITIAL_EVENTS: Event[] = [
       "A 24-hour build challenge where student teams design and ship a working software prototype. Mentors, meals, cloud credits, and prizes provided. Teams of 2 to 4 members are welcome.",
     registrationDeadline: "2026-11-15",
     registrationLink: "https://forms.example/codesprint",
-    image: EVENT_IMAGE_MAP["code-sprint-hackathon"],
+    image: "/images/events/code-sprint-hackathon.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-20",
     approvalDate: "2026-10-22",
@@ -294,7 +290,7 @@ export const INITIAL_EVENTS: Event[] = [
       "A hands-on introduction to machine learning, neural networks, and modern AI app deployment. Learn foundational concepts, build your first model with PyTorch, and explore practical computer vision.",
     registrationDeadline: "2026-11-10",
     registrationLink: "https://forms.example/aiml-workshop",
-    image: EVENT_IMAGE_MAP["ai-ml-workshop"],
+    image: "/images/events/ai-ml-workshop.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-18",
     approvalDate: "2026-10-20",
@@ -313,7 +309,7 @@ export const INITIAL_EVENTS: Event[] = [
       "An inter-college parliamentary debate competition testing rhetoric, policy analysis, and spontaneous critical thinking. Open to all departments and degree streams.",
     registrationDeadline: "2026-11-20",
     registrationLink: "https://forms.example/debate",
-    image: EVENT_IMAGE_MAP["inter-college-debate"],
+    image: "/images/events/inter-college-debate.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-19",
     approvalDate: "2026-10-21",
@@ -332,7 +328,7 @@ export const INITIAL_EVENTS: Event[] = [
       "An evening celebrating music, classical and western dance, theatrical performances, and campus talent. Join in with fellow students for an unforgettable campus night.",
     registrationDeadline: "2026-11-25",
     registrationLink: "https://forms.example/cultural-night",
-    image: EVENT_IMAGE_MAP["cultural-night"],
+    image: "/images/events/cultural-night.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-21",
     approvalDate: "2026-10-23",
@@ -351,7 +347,7 @@ export const INITIAL_EVENTS: Event[] = [
       "A fast-paced full-stack development workshop covering modern web frameworks, component architecture, TypeScript, and API integration with interactive exercises.",
     registrationDeadline: "2026-12-02",
     registrationLink: "https://forms.example/webdev-bootcamp",
-    image: EVENT_IMAGE_MAP["web-dev-bootcamp"],
+    image: "/images/events/web-dev-bootcamp.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-23",
     approvalDate: "2026-10-25",
@@ -370,7 +366,7 @@ export const INITIAL_EVENTS: Event[] = [
       "A musical evening featuring college bands, acoustic ensembles, and guest indie musicians. Food stalls and merchandise booths available for all attendees.",
     registrationDeadline: "2026-12-05",
     registrationLink: "https://forms.example/music-fest",
-    image: EVENT_IMAGE_MAP["annual-music-fest"],
+    image: "/images/events/annual-music-fest.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-24",
     approvalDate: "2026-10-26",
@@ -389,7 +385,7 @@ export const INITIAL_EVENTS: Event[] = [
       "Master the fundamentals of user research, rapid prototyping, wireframing, and user testing through hands-on collaborative design sprint exercises.",
     registrationDeadline: "2026-12-08",
     registrationLink: "https://forms.example/design-thinking",
-    image: EVENT_IMAGE_MAP["design-thinking-masterclass"],
+    image: "/images/events/design-thinking.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-25",
     approvalDate: "2026-10-27",
@@ -408,7 +404,7 @@ export const INITIAL_EVENTS: Event[] = [
       "Compete in cryptography, reverse engineering, web security, and network forensics challenges. Solo or teams of two are eligible with live leaderboard ranking.",
     registrationDeadline: "2026-12-12",
     registrationLink: "https://forms.example/ctf-challenge",
-    image: EVENT_IMAGE_MAP["cybersecurity-ctf-challenge"],
+    image: "/images/events/cybersecurity-ctf.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-26",
     approvalDate: "2026-10-28",
@@ -427,7 +423,7 @@ export const INITIAL_EVENTS: Event[] = [
       "A battle of wits covering general knowledge, science, literature, pop culture, and sports history. Medals and certificates for finalists across departments.",
     registrationDeadline: "2026-12-15",
     registrationLink: "https://forms.example/quiz-bowl",
-    image: EVENT_IMAGE_MAP["quiz-bowl-championship"],
+    image: "/images/events/quiz-bowl.jpg",
     approvalStatus: "Approved",
     submissionDate: "2026-10-27",
     approvalDate: "2026-10-29",
@@ -446,7 +442,7 @@ export const INITIAL_EVENTS: Event[] = [
       "Showcase of student-built autonomous bots, drones, line-followers, and industrial automation prototypes with live arena demonstrations.",
     registrationDeadline: "2026-11-25",
     registrationLink: "https://forms.example/robotics-expo",
-    image: EVENT_IMAGE_MAP["robotics-expo"],
+    image: "/images/events/robotics-expo.jpg",
     approvalStatus: "Pending",
     submissionDate: "2026-10-28",
     featured: false,
@@ -464,7 +460,7 @@ export const INITIAL_EVENTS: Event[] = [
       "Golden hour photo expedition across campus botanical garden and lake. Learn manual DSLR settings, framing, aperture control, and light composition.",
     registrationDeadline: "2026-11-23",
     registrationLink: "https://forms.example/photo-walk",
-    image: EVENT_IMAGE_MAP["photography-walk"],
+    image: "/images/events/photography-walk.jpg",
     approvalStatus: "Pending",
     submissionDate: "2026-10-27",
     featured: false,
@@ -482,7 +478,7 @@ export const INITIAL_EVENTS: Event[] = [
       "Annual collegiate startup pitch competition. Pitch to angel investors and venture capitalists with seed funding awards and incubator access.",
     registrationDeadline: "2026-11-30",
     registrationLink: "https://forms.example/pitchday",
-    image: EVENT_IMAGE_MAP["startup-pitch-day"],
+    image: "/images/events/startup-pitch-day.jpg",
     approvalStatus: "Pending",
     submissionDate: "2026-10-26",
     featured: false,
@@ -500,7 +496,7 @@ export const INITIAL_EVENTS: Event[] = [
       "An acoustic evening of student singing, spoken word poetry, stand-up comedy, and musical performances in a supportive campus atmosphere.",
     registrationDeadline: "2026-11-28",
     registrationLink: "https://forms.example/openmic",
-    image: EVENT_IMAGE_MAP["open-mic-night"],
+    image: "/images/events/open-mic-night.jpg",
     approvalStatus: "Rejected",
     submissionDate: "2026-10-25",
     adminFeedback:
@@ -520,7 +516,7 @@ export const INITIAL_EVENTS: Event[] = [
       "Inter-hostel LAN gaming championship featuring Valorant, FIFA, and Rocket League tournaments.",
     registrationDeadline: "2026-11-18",
     registrationLink: "https://forms.example/gamingnight",
-    image: EVENT_IMAGE_MAP["late-night-gaming"],
+    image: "/images/events/late-night-gaming.jpg",
     approvalStatus: "Rejected",
     submissionDate: "2026-10-21",
     adminFeedback: "Timing violates campus curfew policy.",
