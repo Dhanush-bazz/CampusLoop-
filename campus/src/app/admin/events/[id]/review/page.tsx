@@ -9,16 +9,16 @@ import {
   ExternalLink,
   Mail,
   MapPin,
-  Tag,
   User,
   XCircle,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, use, useState } from "react";
+import EventBanner from "@/components/events/event-banner";
 import AdminLayout from "@/components/layout/admin-layout";
 import { useAdmin } from "@/context/admin-context";
+import { isValidHttpUrl } from "@/lib/urls";
 
 interface AdminReviewPageProps {
   params: Promise<{ id: string }>;
@@ -52,7 +52,7 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
           <div className="mt-6">
             <Link
               href="/admin/events/pending"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white shadow-xs"
             >
               <ArrowLeft className="h-4 w-4" />
               Return to Pending Events
@@ -85,6 +85,9 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
       router.push("/admin/events/rejected");
     }, 1200);
   };
+
+  const registrationUrl = event.registrationUrl || event.registrationLink;
+  const organiserName = event.organiserName || event.organiser;
 
   return (
     <AdminLayout>
@@ -131,6 +134,11 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
                 Status: Rejected
               </span>
             )}
+            {event.approvalStatus === "Draft" && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-muted px-3 py-1 text-xs font-bold text-text-secondary">
+                Status: Draft
+              </span>
+            )}
           </div>
         </div>
 
@@ -151,22 +159,12 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
           <div className="lg:col-span-7 space-y-6">
             <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
               {/* Event banner */}
-              <div className="relative aspect-video w-full bg-[#e7e7e7]">
-                <Image
-                  src={event.bannerUrl}
-                  alt={event.title}
-                  width={1200}
-                  height={675}
-                  unoptimized
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute top-3 left-3">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-black/70 backdrop-blur-xs px-3 py-1 text-xs font-semibold text-white">
-                    <Tag className="h-3 w-3" />
-                    {event.category}
-                  </span>
-                </div>
-              </div>
+              <EventBanner
+                event={event}
+                className="relative aspect-video w-full"
+                showCategoryBadge={true}
+                priority={true}
+              />
 
               {/* Event information card (matching Frame 20 rect #f7f7f7) */}
               <div className="p-6 bg-[#f7f7f7] border-t border-border space-y-4">
@@ -190,7 +188,7 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-text-tertiary shrink-0" />
                     <span>
-                      <strong>Organiser:</strong> {event.organiserName}
+                      <strong>Organiser:</strong> {organiserName}
                     </span>
                   </div>
 
@@ -229,14 +227,20 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
                     <ExternalLink className="h-4 w-4 text-text-tertiary shrink-0" />
                     <span>
                       <strong>Registration URL:</strong>{" "}
-                      <a
-                        href={event.registrationUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-primary font-medium hover:underline break-all"
-                      >
-                        {event.registrationUrl}
-                      </a>
+                      {isValidHttpUrl(registrationUrl) ? (
+                        <a
+                          href={registrationUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary font-medium hover:underline break-all"
+                        >
+                          {registrationUrl}
+                        </a>
+                      ) : (
+                        <span className="text-text-secondary">
+                          Not provided
+                        </span>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -252,7 +256,7 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
               </div>
             </div>
 
-            {/* Frame 20 Action Buttons: Approve Event (w=200, fill=#eaf9ef) & Reject Event (w=200, fill=#fff0f0) */}
+            {/* Frame 20 Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full">
               <button
                 type="button"
@@ -280,9 +284,9 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
             </div>
           </div>
 
-          {/* Right Column: Inline Approval / Rejection Dialogs matching Frame 20 SVG */}
+          {/* Right Column: Inline Approval / Rejection Dialogs */}
           <div className="lg:col-span-5 space-y-6">
-            {/* 1. Approve Dialog Panel (matching Frame 20 rect x=860 y=148 w=532 h=240 fill=#ffffff) */}
+            {/* 1. Approve Dialog Panel */}
             <div
               className={`rounded-2xl border p-6 shadow-sm transition-all ${
                 showApproveDialog
@@ -326,7 +330,7 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
               </p>
             </div>
 
-            {/* 2. Reject Dialog Panel (matching Frame 20 rect x=860 y=412 w=532 h=330 fill=#ffffff) */}
+            {/* 2. Reject Dialog Panel */}
             <div
               className={`rounded-2xl border p-6 shadow-sm transition-all ${
                 showRejectDialog
@@ -387,7 +391,8 @@ function AdminReviewInner({ params }: AdminReviewPageProps) {
               </div>
 
               <p className="mt-3 text-[11px] text-text-tertiary">
-                After: Status = Rejected, reason shown to organiser on Frame 16
+                After: Status = Rejected, reason shown to organiser on Event
+                Details
               </p>
             </div>
           </div>
